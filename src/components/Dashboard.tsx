@@ -33,6 +33,12 @@ export function Dashboard() {
     const chrono = getChrononutritionState(profile.timezone);
     const routine = getWorkoutRoutine(profile.mission);
 
+    // Use Gemini macros if available (more accurate), else fall back to local algorithm
+    const calories = profile.geminiCalories ?? nutrition.calories;
+    const protein = profile.geminiProtein ?? nutrition.proteinGrams;
+    const carbs = profile.geminiCarbs ?? nutrition.carbsGrams;
+    const fats = profile.geminiFats ?? nutrition.fatsGrams;
+
     return (
         <div className="min-h-screen p-4 md:p-12 bg-background relative font-[family-name:var(--font-space-grotesk)] text-foreground flex flex-col items-center">
             <div className="fixed top-0 inset-x-0 h-1/2 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.04)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
@@ -90,14 +96,14 @@ export function Dashboard() {
                             <h2 className="text-xs font-semibold uppercase tracking-[0.3em] flex items-center gap-3">
                                 <Activity className="w-4 h-4 text-primary" /> Protocolo de Combustible
                             </h2>
-                            <span className="text-[10px] font-mono text-muted-foreground">{nutrition.calories} KCAL</span>
+                            <span className="text-[10px] font-mono text-muted-foreground">{calories} KCAL</span>
                         </div>
 
                         <div className="grid grid-cols-3 gap-3">
                             {[
-                                { label: 'PRT (g)', val: nutrition.proteinGrams },
-                                { label: 'CRB (g)', val: nutrition.carbsGrams },
-                                { label: 'FAT (g)', val: nutrition.fatsGrams },
+                                { label: 'PRT (g)', val: protein },
+                                { label: 'CRB (g)', val: carbs },
+                                { label: 'FAT (g)', val: fats },
                             ].map(m => (
                                 <div key={m.label} className="bg-card/30 backdrop-blur-md border border-white/5 p-5 rounded-2xl flex flex-col items-center gap-2">
                                     <p className="text-3xl font-[family-name:var(--font-anton)] text-white">{m.val}</p>
@@ -177,6 +183,47 @@ export function Dashboard() {
                     </div>
 
                 </div>
+
+                {/* Gemini AI Insights — only shown if available */}
+                {(profile.geminiMissionReason || profile.geminiInsights?.length || profile.geminiFirstAction) && (
+                    <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                        {profile.geminiMissionReason && (
+                            <div className="lg:col-span-7 bg-card/10 border border-primary/10 rounded-3xl p-8">
+                                <div className="flex items-center gap-3 mb-5">
+                                    <Diamond className="w-4 h-4 text-primary" strokeWidth={1.5} />
+                                    <span className="text-[9px] uppercase tracking-[0.3em] font-semibold text-primary">Diagnóstico TEMPLO OS</span>
+                                </div>
+                                <p className="text-sm font-light leading-relaxed text-white/80">{profile.geminiMissionReason}</p>
+                            </div>
+                        )}
+
+                        {profile.geminiInsights && profile.geminiInsights.length > 0 && (
+                            <div className="lg:col-span-5 space-y-4">
+                                <div className="flex items-center gap-3 mb-5">
+                                    <Zap className="w-4 h-4 text-primary" strokeWidth={1.5} />
+                                    <span className="text-[9px] uppercase tracking-[0.3em] font-semibold text-primary">Insights Biológicos</span>
+                                </div>
+                                {profile.geminiInsights.map((insight, i) => (
+                                    <div key={i} className="flex gap-4 border-b border-white/5 pb-4 last:border-0 last:pb-0">
+                                        <span className="font-[family-name:var(--font-anton)] text-primary text-lg shrink-0">{i + 1}</span>
+                                        <p className="text-xs font-light leading-relaxed text-white/70">{insight}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {profile.geminiFirstAction && (
+                            <div className="lg:col-span-12 bg-primary/5 border border-primary/20 rounded-3xl p-8 flex items-start gap-6">
+                                <Flame className="w-6 h-6 text-primary shrink-0 mt-0.5" strokeWidth={1.5} />
+                                <div>
+                                    <p className="text-[9px] uppercase tracking-[0.3em] font-semibold text-primary mb-2">Tu Primera Acción — Mañana al Despertar</p>
+                                    <p className="text-sm font-light leading-relaxed text-white/90">{profile.geminiFirstAction}</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 <footer className="mt-32 pt-12 pb-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-[10px] uppercase tracking-[0.4em] text-muted-foreground gap-4">
                     <span>TEMPLO // ORIGINAL DESIGN</span>

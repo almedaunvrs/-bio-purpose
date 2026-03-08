@@ -217,103 +217,114 @@ export function Onboarding() {
         if (currentStep > 0) setCurrentStep(prev => prev - 1);
     };
 
-    const buildFinalProfile = () => {
+    const buildFinalProfile = async () => {
         setPhase('finalizing');
 
-        // Smart keyword parser — infer mission from free-text dream
-        const dream = (answers.mainGoal || '').toLowerCase();
-        let inferredMission: Mission = 'lider';
-        const athleteKeywords = ['musculo', 'músculo', 'deporte', 'fuerza', 'atleta', 'competencia', 'gym', 'hipertrofia', 'crossfit', 'correr', 'maratón', 'marathon', 'natacion', 'futbol', 'basket', 'fisico', 'físico', 'cuerpo', 'marcado', 'olimpico', 'olímpico'];
-        const explorerKeywords = ['viajar', 'viaje', 'libertad', 'explorar', 'mundo', 'aventura', 'resistencia', 'energia', 'energía', 'mochila', 'nómada', 'nomada', 'tribu', 'naturaleza', 'ultra', 'endurance'];
-        const leaderKeywords = ['negocio', 'empresa', 'liderar', 'crear', 'creativo', 'enfoque', 'focus', 'cerebro', 'mente', 'startup', 'construir', 'familia', 'padre', 'madre', 'mentor', 'impacto', 'influencia'];
-
-        const athleteScore = athleteKeywords.filter(k => dream.includes(k)).length;
-        const explorerScore = explorerKeywords.filter(k => dream.includes(k)).length;
-        const leaderScore = leaderKeywords.filter(k => dream.includes(k)).length;
-
-        if (athleteScore >= explorerScore && athleteScore >= leaderScore && athleteScore > 0) inferredMission = 'atleta';
-        else if (explorerScore >= athleteScore && explorerScore >= leaderScore && explorerScore > 0) inferredMission = 'explorador';
-        else inferredMission = 'lider';
-
-        // Smart body composition inference — TEMPLO determines your target automatically
-        const currentWeight = Number(answers.weightKg) || 70;
-        const heightM = (Number(answers.heightCm) || 170) / 100;
-        const bmi = currentWeight / (heightM * heightM);
-
-        // Infer ideal body fat % and goal weight from dream + mission
-        let targetBodyFat = 15;
-        let goalWeightKg = currentWeight;
-
-        if (inferredMission === 'atleta') {
-            // Athletes need low body fat, lean mass
-            targetBodyFat = answers.biologicalSex === 'femenino' ? 18 : 10;
-            // Lean mass stays, goal is to gain muscle (slight surplus over lean mass)
-            const currentLeanMass = currentWeight * (1 - (15 / 100));
-            goalWeightKg = Math.round(currentLeanMass / (1 - targetBodyFat / 100));
-        } else if (inferredMission === 'explorador') {
-            // Explorers need endurance — lean but not super-cut
-            targetBodyFat = answers.biologicalSex === 'femenino' ? 20 : 13;
-            const currentLeanMass = currentWeight * (1 - (15 / 100));
-            goalWeightKg = Math.round(currentLeanMass / (1 - targetBodyFat / 100));
-        } else {
-            // Leaders: healthy maintenance, cognitive performance
-            targetBodyFat = answers.biologicalSex === 'femenino' ? 22 : 16;
-            // If overweight by BMI, cut; otherwise maintain
-            if (bmi > 25) {
-                goalWeightKg = Math.round(23 * heightM * heightM); // target healthy BMI 23
-            } else {
-                goalWeightKg = currentWeight; // maintain
-            }
-        }
-
-        const goalDelta = goalWeightKg - currentWeight;
-        const goalDescription = goalDelta > 2
-            ? `Meta: +${goalDelta}kg de masa muscular magra`
-            : goalDelta < -2
-                ? `Meta: ${goalDelta}kg de reducción de grasa corporal`
-                : 'Meta: Optimización y mantenimiento de composición corporal';
-
-        const finalizingLines = [
+        // Show animated log lines while Gemini thinks
+        const thinkingLines = [
+            'Conectando con TEMPLO OS...',
             'Analizando sueño del alma...',
-            `Protocolo "${inferredMission.toUpperCase()}" seleccionado por la IA`,
-            `Tipo de cuerpo: ${(answers.bodyType || 'mesomorfo').toUpperCase()} → metabolismo calibrado`,
-            `Composición corporal óptima calculada: ${targetBodyFat}% grasa corporal`,
-            goalDescription,
-            `Ubicación: ${answers.location || 'México'} → Cronobiología sincronizada`,
-            'Calculando Protocolo de Combustible...',
-            'Generando Optimización Mecánica...',
-            'Protocolo personalizado listo.',
+            'Cruzando datos biológicos con principios divinos...',
+            'Consultando protocolos de Cronobiología...',
+            'Calculando composición corporal óptima...',
+            'Generando tu protocolo personalizado...',
         ];
 
-        finalizingLines.forEach((line, i) => {
-            setTimeout(() => {
-                setFinalLines(prev => [...prev, line]);
-                if (i === finalizingLines.length - 1) {
-                    setTimeout(() => {
-                        const loc = answers.location || '';
-                        const tz = guessTimezone(loc);
-                        setProfile({
-                            age: Number(answers.age) || 25,
-                            heightCm: Number(answers.heightCm) || 170,
-                            weightKg: currentWeight,
-                            goalWeightKg,
-                            bodyFatPercentage: targetBodyFat,
-                            biologicalSex: (answers.biologicalSex as BiologicalSex) || 'masculino',
-                            bodyType: (answers.bodyType as BodyType) || 'mesomorfo',
-                            activityLevel: (answers.activityLevel as ActivityLevel) || 'moderado',
-                            sleepQuality: (answers.sleepQuality as SleepQuality) || 'regular',
-                            stressLevel: Number(answers.stressLevel) || 5,
-                            location: loc,
-                            timezone: tz,
-                            injuries: answers.injuries || 'ninguna',
-                            mission: inferredMission,
-                            mainGoal: answers.mainGoal || '',
-                        });
-                    }, 1000);
-                }
-            }, i * 750);
+        // Stream thinking lines, then fire the real API call in parallel
+        thinkingLines.forEach((line, i) => {
+            setTimeout(() => setFinalLines(prev => [...prev, line]), i * 800);
         });
+
+        try {
+            const response = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    mainGoal: answers.mainGoal || '',
+                    biologicalSex: answers.biologicalSex || 'masculino',
+                    age: Number(answers.age) || 25,
+                    heightCm: Number(answers.heightCm) || 170,
+                    weightKg: Number(answers.weightKg) || 70,
+                    bodyType: answers.bodyType || 'mesomorfo',
+                    activityLevel: answers.activityLevel || 'moderado',
+                    sleepQuality: answers.sleepQuality || 'regular',
+                    stressLevel: Number(answers.stressLevel) || 5,
+                    location: answers.location || 'México',
+                }),
+            });
+
+            if (!response.ok) throw new Error('API error');
+            const geminiResult = await response.json();
+
+            // Show the AI-generated results as final log lines
+            setTimeout(() => {
+                setFinalLines(prev => [
+                    ...prev,
+                    `Protocolo "${(geminiResult.missionLabel || geminiResult.mission || 'TEMPLO').toUpperCase()}" confirmado`,
+                    `Composición corporal objetivo: ${geminiResult.targetBodyFatPercent}% grasa corporal`,
+                    `Meta de masa corporal: ${geminiResult.goalWeightKg}kg`,
+                    'Protocolo de Combustible y Optimización Mecánica listos.',
+                ]);
+
+                // After a short pause, load the dashboard
+                setTimeout(() => {
+                    const loc = (answers.location as string) || '';
+                    const tz = guessTimezone(loc);
+                    setProfile({
+                        age: Number(answers.age) || 25,
+                        heightCm: Number(answers.heightCm) || 170,
+                        weightKg: Number(answers.weightKg) || 70,
+                        goalWeightKg: geminiResult.goalWeightKg || Number(answers.weightKg) || 70,
+                        bodyFatPercentage: geminiResult.targetBodyFatPercent || 15,
+                        biologicalSex: (answers.biologicalSex as BiologicalSex) || 'masculino',
+                        bodyType: (answers.bodyType as BodyType) || 'mesomorfo',
+                        activityLevel: (answers.activityLevel as ActivityLevel) || 'moderado',
+                        sleepQuality: (answers.sleepQuality as SleepQuality) || 'regular',
+                        stressLevel: Number(answers.stressLevel) || 5,
+                        location: loc,
+                        timezone: tz,
+                        injuries: answers.injuries || 'ninguna',
+                        mission: (geminiResult.mission as Mission) || 'lider',
+                        mainGoal: answers.mainGoal || '',
+                        // Store Gemini extras for Dashboard display
+                        geminiInsights: geminiResult.keyInsights || [],
+                        geminiMissionReason: geminiResult.missionReason || '',
+                        geminiFirstAction: geminiResult.firstAction || '',
+                        geminiCalories: geminiResult.calories,
+                        geminiProtein: geminiResult.proteinGrams,
+                        geminiCarbs: geminiResult.carbsGrams,
+                        geminiFats: geminiResult.fatsGrams,
+                    } as any);
+                }, 1500);
+            }, thinkingLines.length * 800 + 200);
+
+        } catch {
+            setFinalLines(prev => [...prev, 'Error de conexión. Usando protocolo base...']);
+            // Fallback to local calculation
+            setTimeout(() => {
+                const loc = (answers.location as string) || '';
+                const tz = guessTimezone(loc);
+                setProfile({
+                    age: Number(answers.age) || 25,
+                    heightCm: Number(answers.heightCm) || 170,
+                    weightKg: Number(answers.weightKg) || 70,
+                    goalWeightKg: Number(answers.weightKg) || 70,
+                    bodyFatPercentage: 15,
+                    biologicalSex: (answers.biologicalSex as BiologicalSex) || 'masculino',
+                    bodyType: (answers.bodyType as BodyType) || 'mesomorfo',
+                    activityLevel: (answers.activityLevel as ActivityLevel) || 'moderado',
+                    sleepQuality: (answers.sleepQuality as SleepQuality) || 'regular',
+                    stressLevel: Number(answers.stressLevel) || 5,
+                    location: loc,
+                    timezone: tz,
+                    injuries: answers.injuries || 'ninguna',
+                    mission: 'lider',
+                    mainGoal: answers.mainGoal || '',
+                } as any);
+            }, 2000);
+        }
     };
+
 
     const progress = ((currentStep) / STEPS.length) * 100;
 

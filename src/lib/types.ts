@@ -22,14 +22,24 @@ export interface UserProfile {
   stressLevel: number; // 1-10
 
   // Context
-  location: string;    // city / country for timezone awareness
-  timezone: string;    // IANA timezone string
-  injuries: string;    // "ninguna" or free text
+  location: string;
+  timezone: string;
+  injuries: string;
 
   // Goal
   mission: Mission;
-  mainGoal: string;    // free text summary of what they want to achieve
+  mainGoal: string;
+
+  // Gemini AI-generated fields (optional — set after AI analysis)
+  geminiInsights?: string[];
+  geminiMissionReason?: string;
+  geminiFirstAction?: string;
+  geminiCalories?: number;
+  geminiProtein?: number;
+  geminiCarbs?: number;
+  geminiFats?: number;
 }
+
 
 export interface MacroSplit {
   calories: number;
