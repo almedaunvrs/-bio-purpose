@@ -1,90 +1,127 @@
 import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
-import { Mission, UserProfile, MacroSplit } from './types';
+import { Mission, UserProfile, MacroSplit, BodyType, ActivityLevel, BiologicalSex } from './types';
 
-// Katch-McArdle BMR Calculator
+// Activity multipliers
+const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
+    sedentario: 1.2,
+    moderado: 1.375,
+    activo: 1.55,
+    muy_activo: 1.725,
+};
+
+// Katch-McArdle BMR Calculator - now fully personalized
 export function calculateNutrition(profile: UserProfile): MacroSplit {
-    const { weightKg, goalWeightKg, bodyFatPercentage, mission } = profile;
+    const { weightKg, goalWeightKg, bodyFatPercentage, mission, activityLevel, bodyType, biologicalSex, stressLevel } = profile;
 
     // Lean Body Mass
     const lbm = weightKg * (1 - bodyFatPercentage / 100);
 
-    // Basal Metabolic Rate
-    let bmr = 370 + (21.6 * lbm);
+    // Basal Metabolic Rate (Katch-McArdle)
+    const bmr = 370 + (21.6 * lbm);
 
-    // Total Daily Energy Expenditure (Assuming moderate/high activity for these missions)
-    let tdee = bmr * 1.55;
+    // TDEE based on activity level
+    let tdee = bmr * ACTIVITY_MULTIPLIERS[activityLevel];
 
-    // Surplus or Deficit
+    // Body type adjusts metabolism
+    if (bodyType === 'ectomorfo') tdee *= 1.08;   // Fast metabolism, needs more food
+    if (bodyType === 'endomorfo') tdee *= 0.94;   // Slower metabolism, needs less
+
+    // Sex adjustment
+    if (biologicalSex === 'femenino') tdee *= 0.92;
+
+    // Stress raises cortisol, lowers effective recovery → slight calorie bump for muscle preservation
+    const stressMultiplier = 1 + (stressLevel - 5) * 0.01;
+    tdee *= stressMultiplier;
+
+    // Goal caloric adjustment
     const isBulking = goalWeightKg > weightKg;
     const isCutting = goalWeightKg < weightKg;
-
     let targetCalories = tdee;
-    if (isBulking) targetCalories += 400; // Hypertrophy surplus
-    if (isCutting) targetCalories -= 400; // Fat loss deficit
+    if (isBulking) targetCalories += bodyType === 'ectomorfo' ? 600 : 400;
+    if (isCutting) targetCalories -= bodyType === 'endomorfo' ? 600 : 400;
 
-    // Base Macros
-    let proteinMultiplier = 2.2; // grams per kg
-    let fatMultiplier = 1.0; // grams per kg
+    // Base macro config
+    let proteinMultiplier = 2.2; // g/kg
+    let fatMultiplier = 1.0;     // g/kg
 
-    // Mission Tweaks
-    if (mission === 'explorador') {
-        // Sustained energy: higher fat, lower carb
-        fatMultiplier = 1.3;
-    } else if (mission === 'atleta') {
-        // Explosiveness: high carb, very high protein
-        proteinMultiplier = 2.5;
-        // In the user prompt, they mentioned wanting ~250g protein for atleta
-        if (proteinMultiplier * weightKg < 200) {
-            proteinMultiplier = 200 / weightKg; // bump it up to hit high protein if Atleta
-        }
+    // Mission-based macro priority
+    if (mission === 'atleta') {
+        proteinMultiplier = bodyType === 'ectomorfo' ? 2.8 : 2.5;
     } else if (mission === 'lider') {
-        // Focus, neuro-protection: moderate/high fats for brain
+        fatMultiplier = 1.3; // Brain fuel: omega-3, healthy fats
+    } else if (mission === 'explorador') {
         fatMultiplier = 1.2;
     }
 
+    // Body type fine-tuning
+    if (bodyType === 'endomorfo') {
+        fatMultiplier *= 0.85;  // Lower fat for endomorphs
+        proteinMultiplier *= 1.1;  // More protein for satiety
+    } else if (bodyType === 'ectomorfo') {
+        fatMultiplier *= 1.1;  // Higher fat to hit calorie goals
+    }
+
+    // Sex fine-tuning
+    if (biologicalSex === 'femenino') {
+        fatMultiplier *= 1.15; // Females need more healthy fats (hormones)
+    }
+
+    // Sleep compensation: poor sleep → raise protein to preserve muscle
+    if (profile.sleepQuality === 'mala') proteinMultiplier *= 1.1;
+
     const proteinGrams = Math.round(weightKg * proteinMultiplier);
     const fatsGrams = Math.round(weightKg * fatMultiplier);
-
     const proteinCalories = proteinGrams * 4;
     const fatsCalories = fatsGrams * 9;
-
     const remainingCalories = targetCalories - proteinCalories - fatsCalories;
-    const carbsGrams = Math.max(0, Math.round(remainingCalories / 4)); // Ensure carbs don't go negative
+    const carbsGrams = Math.max(30, Math.round(remainingCalories / 4));
 
     return {
         calories: Math.round(targetCalories),
         proteinGrams,
         carbsGrams,
-        fatsGrams
+        fatsGrams,
     };
 }
 
 export type ChronoState = 'Movimiento' | 'Festín' | 'Reparación';
 
-export function getChrononutritionState(): { state: ChronoState, message: string } {
-    const timeZone = 'America/Monterrey'; // Monclova uses Monterrey timezone
+export function getChrononutritionState(timezone?: string): { state: ChronoState, message: string } {
+    const tz = timezone || 'America/Monterrey';
     const now = new Date();
-
-    const zonedNow = toZonedTime(now, timeZone);
+    const zonedNow = toZonedTime(now, tz);
     const hour = zonedNow.getHours();
 
-    // 6:00 to 11:59 => Movimiento
     if (hour >= 6 && hour < 12) {
         return {
             state: 'Movimiento',
-            message: 'Es momento de activar el cuerpo. Entrenamiento en ayunas o con hidratación mineral.'
+            message: 'Es momento de activar el cuerpo. Entrenamiento en ayunas o con hidratación mineral.',
         };
     }
-    // 12:00 to 19:59 => Festín
     if (hour >= 12 && hour < 20) {
         return {
             state: 'Festín',
-            message: 'Ventana de alimentación abierta. Introduce las 3 comidas densas, 100% libres de lactosa.'
+            message: 'Ventana de alimentación abierta. Introduce las comidas densas, 100% libres de lactosa.',
         };
     }
-    // 20:00 to 5:59 => Reparación
     return {
         state: 'Reparación',
-        message: 'Momento de neuro-protección y descanso. Apaga pantallas y prepara el sueño del alma.'
+        message: 'Momento de neuro-protección y descanso. Apaga pantallas y prepara el sueño del alma.',
     };
+}
+
+// Guess timezone from city name (expanded map)
+export function guessTimezone(location: string): string {
+    const loc = location.toLowerCase();
+    if (loc.includes('monterrey') || loc.includes('cdmx') || loc.includes('ciudad de mexico') || loc.includes('guadalajara') || loc.includes('monclova') || loc.includes('saltillo') || loc.includes('mexico') || loc.includes('mx')) return 'America/Monterrey';
+    if (loc.includes('madrid') || loc.includes('barcelona') || loc.includes('españa') || loc.includes('spain')) return 'Europe/Madrid';
+    if (loc.includes('bogota') || loc.includes('colombia')) return 'America/Bogota';
+    if (loc.includes('buenos aires') || loc.includes('argentina')) return 'America/Argentina/Buenos_Aires';
+    if (loc.includes('lima') || loc.includes('peru')) return 'America/Lima';
+    if (loc.includes('santiago') || loc.includes('chile')) return 'America/Santiago';
+    if (loc.includes('london') || loc.includes('uk') || loc.includes('reino unido')) return 'Europe/London';
+    if (loc.includes('new york') || loc.includes('miami') || loc.includes('boston')) return 'America/New_York';
+    if (loc.includes('los angeles') || loc.includes('la,') || loc.includes('california') || loc.includes('san francisco')) return 'America/Los_Angeles';
+    if (loc.includes('chicago')) return 'America/Chicago';
+    return 'America/Monterrey'; // fallback
 }

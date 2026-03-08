@@ -16,7 +16,7 @@ export const useUserStore = create<UserStore>()(
             resetProfile: () => set({ profile: null }),
         }),
         {
-            name: 'bio-purpose-storage',
+            name: 'templo-bio-storage',
         }
     )
 );
