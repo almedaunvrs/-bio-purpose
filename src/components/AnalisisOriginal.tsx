@@ -84,31 +84,31 @@ export function AnalisisOriginal() {
     const analyses = [
         {
             icon: '🔬',
-            title: 'Estado Actual — Tu Vehículo de Hoy',
+            title: 'Diagnóstico del Vehículo',
             content: proto?.missionReason
                 ? proto.missionReason
-                : `Con ${currentWeight}kg y ${p.heightCm}cm, tu FFMI actual es ${((currentWeight * 0.82) / (heightM * heightM)).toFixed(1)}. ${gapKg > 0 ? `Para tu sueño necesitas construir ${gapKg}kg adicionales de tejido contráctil.` : 'Tu composición actual está cerca de la meta — el trabajo es de optimización.'}`,
+                : `Con ${currentWeight}kg y ${p.heightCm}cm, tu FFMI actual es ${((currentWeight * 0.82) / (heightM * heightM)).toFixed(1)}. Comparación honesta: ${gapKg > 0 ? `Para tu sueño necesitas construir ${gapKg}kg adicionales de tejido contráctil.` : 'Tu peso actual soporta el sueño, el trabajo es de optimización de composición.'}`,
         },
         {
             icon: '⚡',
-            title: 'La Brecha de Poder — Lo Que Falta',
+            title: 'La Necesidad de Masa',
             content: proto?.gapMessage
                 ? proto.gapMessage
-                : `Peso actual: ${currentWeight}kg → Meta de Poder: ${goalWeight}kg. ${gapKg > 0 ? `Faltan ${gapKg}kg de músculo funcional para que tu cuerpo soporte la carga de trabajo de tu sueño.` : 'El enfoque es composición corporal y rendimiento, no escala de peso.'}`,
+                : `Peso actual: ${currentWeight}kg → Peso Crítico de Desempeño: ${goalWeight}kg. ${gapKg > 0 ? `La fuerza requiere masa; para levantar el mundo de tu sueño, necesitas un cimiento más pesado. Faltan ${gapKg}kg funcionales.` : 'El enfoque es composición corporal y rendimiento hormonal a partir de hoy.'}`,
         },
         {
             icon: '🧱',
-            title: 'Puntos de Construcción — Dónde Mejorar',
+            title: 'Puntos de Mejora',
             content: proto?.biologicalContext
                 ? proto.biologicalContext
-                : `1. Síntesis proteica (Construcción de Músculo): ${proto?.proteinGrams ?? 150}g/día. 2. Grasas saturadas naturales para optimizar testosterona natural. 3. Densidad mineral ósea mediante mineralización eléctrica (Mg-K-Na). 4. Cronobiología: entrenar en ventana 06-12h para máximo anabolismo.`,
+                : `1. Síntesis proteica: elevar a ${proto?.proteinGrams ?? 150}g/día. 2. Optimización hormonal: grasas saturadas naturales para base de testosterona/estrógenos. 3. Densidad mineral ósea (Mg-K-Na).`,
         },
         {
             icon: '🗺️',
-            title: 'Estrategia de Crecimiento — El Camino',
+            title: 'Aceptación de la Misión',
             content: proto?.firstAction
-                ? `Protocolo de ${gapPhase}. ${gapKg > 0 ? `En 6-12 meses de consistencia, este peso te dará la estructura muscular, autoridad visual y energía cognitiva que tu sueño exige.` : `Tu protocolo de optimización te llevará a tu mejor composición corporal en 3-6 meses.`} Primera acción mañana: ${proto.firstAction}`
-                : `Protocolo calculado específicamente para tu sueño. Sigue el plan Lunes-Domingo con los checkboxes del Dashboard. Cada comida marcada es un ladrillo de tu Templo.`,
+                ? `Protocolo de ${gapPhase}. ${gapKg !== 0 ? `Tu cuerpo TIENE que cambiar y evolucionar para poder alcanzar este sueño.` : `Tu protocolo de optimización te llevará a tu mejor estado biológico.`} Primera acción mañana: ${proto.firstAction}`
+                : `Tu cuerpo va a cambiar estructuralmente para alcanzar este sueño. Sigue el plan Lunes-Domingo. Cada alimento es un bloque de tu nuevo templo.`,
         },
     ];
 
@@ -162,8 +162,8 @@ export function AnalisisOriginal() {
 
                                 {/* Phase badge */}
                                 <span className={`inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.3em] px-3 py-1.5 rounded-full mt-2 ${gapPhase === 'CONSTRUCCIÓN ACTIVA' ? 'bg-amber-100 text-amber-700'
-                                        : gapPhase === 'DEFINICIÓN BIOLÓGICA' ? 'bg-sky-100 text-sky-700'
-                                            : 'bg-emerald-100 text-emerald-700'
+                                    : gapPhase === 'DEFINICIÓN BIOLÓGICA' ? 'bg-sky-100 text-sky-700'
+                                        : 'bg-emerald-100 text-emerald-700'
                                     }`}>
                                     {gapPhase === 'CONSTRUCCIÓN ACTIVA' ? '🏗️' : gapPhase === 'DEFINICIÓN BIOLÓGICA' ? '🔬' : '⚡'} FASE: {gapPhase}
                                 </span>
@@ -227,7 +227,7 @@ export function AnalisisOriginal() {
                                 className="w-full py-5 rounded-2xl font-semibold text-sm uppercase tracking-[0.25em] text-white transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
                                 style={{ backgroundColor: theme.color }}
                             >
-                                Acepto mi Proceso de Construcción →
+                                Entiendo y Acepto mi Transformación →
                             </motion.button>
 
                             <div className="text-center">

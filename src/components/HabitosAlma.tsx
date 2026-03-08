@@ -15,50 +15,50 @@ interface Habit {
 // Habits for men by mission
 const MALE_HABITS: Record<Mission, Habit[]> = {
     atleta: [
+        { emoji: '💪', title: 'Motiva a alguien que empieza en el templo hoy', why: 'El verdadero atleta de Dios no solo levanta peso, levanta a otros' },
+        { emoji: '🏋️', title: 'Busca una carga pesada que llevar por alguien más hoy', why: 'La fuerza que construyes es para servir y proteger, no solo para ser visto' },
         { emoji: '🙏', title: 'Oración de gratitud al despertar (5 min antes de levantarte)', why: 'El atleta que agradece primero tiene más claridad y menos ego en la competencia' },
-        { emoji: '🤝', title: 'Ayuda a alguien con una carga física hoy (mudanza, compras, trabajo)', why: 'La fuerza que construyes es para servir, no solo para ser visto' },
         { emoji: '📞', title: 'Llama a tu padre, mentor o figura que te formó', why: 'Los hombres que honran a sus padres reciben sabiduría de generaciones' },
-        { emoji: '🌱', title: 'Planta una semilla hoy: una idea, un proyecto, un hábito nuevo', why: 'Los atletas de Dios construyen legado, no solo trofeos' },
         { emoji: '❌', title: 'Elimina una queja de tu vocabulario hoy — reemplázala con acción', why: 'El espíritu guerrero habla en hechos, no en excusas' },
     ],
     lider: [
-        { emoji: '🙏', title: 'Diez minutos de silencio antes del primer mensaje o pantalla', why: 'Los líderes que escuchan a Dios primero no reaccionan — responden con sabiduría' },
-        { emoji: '✍️', title: 'Escribe 3 personas a las que puedes agradecer hoy y hazlo real', why: 'La gratitud expresada multiplica las alianzas y el favor humano' },
-        { emoji: '🤲', title: 'Haz un gesto económico o de tiempo a alguien que no puede devolvértelo', why: 'El líder que da sin esperar recibe sin límite — ley universal de la siembra' },
+        { emoji: '🗺️', title: 'Da una instrucción clara y con amor a alguien que guíes', why: 'El liderazgo divino requiere firmeza de mente y suavidad de corazón' },
+        { emoji: '📈', title: 'Ayuda a un empleado o colaborador a crecer hoy', why: 'El líder que multiplica a otros se vuelve indispensable en el Reino' },
+        { emoji: '🏋️', title: 'Busca una carga pesada que llevar por alguien más hoy', why: 'El honor de un líder se mide por el peso que le quita a los suyos' },
         { emoji: '🛑', title: 'Detén una decisión impulsiva hoy. Duerme sobre ella antes de actuar', why: 'Los hombres de Dios actúan con discernimiento, no con urgencia del ego' },
-        { emoji: '👂', title: 'Escucha a alguien completo sin interrumpir — 10 minutos de atención pura', why: 'El que sabe escuchar construye equipos y familias invencibles' },
+        { emoji: '🤲', title: 'Haz un gesto económico o de tiempo a alguien que no puede devolvértelo', why: 'El líder que da sin esperar recibe sin límite — ley universal de la siembra' },
     ],
     explorador: [
-        { emoji: '🙏', title: 'Da gracias por un detalle que normalmente pasas por alto (agua, aire, luz)', why: 'El explorador agradecido descubre maravillas donde otros ven lo ordinario' },
+        { emoji: '🏋️', title: 'Busca una carga pesada que llevar por alguien más hoy', why: 'El explorador fuerte allana el camino para los que vienen detrás' },
         { emoji: '🧭', title: 'Ayuda a alguien a encontrar dirección hoy — un consejo, una recomendación', why: 'Tu curiosidad y experiencia tiene valor para alguien que está perdido' },
-        { emoji: '🌍', title: 'Aprende algo nuevo sobre una cultura, historia o persona diferente a ti', why: 'Dios diseñó la variedad para expandir nuestra comprensión de Él' },
-        { emoji: '🗑️', title: 'Recoge o mejora algo del espacio que usas hoy — ambiente, casa, naturaleza', why: 'El explorador cuida la creación porque reconoce que no le pertenece' },
-        { emoji: '💬', title: 'Comparte una historia de algo que aprendiste esta semana con alguien', why: 'El conocimiento guardado muere. Compartido, se multiplica y hace bien' },
+        { emoji: '🗣️', title: 'Da una instrucción clara y con amor a alguien que guíes', why: 'Proteger con la verdad es el acto más puro de amor masculino' },
+        { emoji: '🗑️', title: 'Recoge o mejora algo del espacio que usas hoy', why: 'El explorador cuida la creación porque reconoce que no le pertenece' },
+        { emoji: '🙏', title: 'Da gracias por un detalle que normalmente pasas por alto (agua, luz)', why: 'El explorador agradecido descubre maravillas donde otros ven lo ordinario' },
     ],
 };
 
 // Habits for women by mission
 const FEMALE_HABITS: Record<Mission, Habit[]> = {
     atleta: [
-        { emoji: '🙏', title: 'Oración o meditación de 5 minutos antes de revisar el teléfono', why: 'La mujer atleta que comienza en paz maneja mejor la presión y la competencia' },
-        { emoji: '💕', title: 'Anima a otra mujer de tu entorno hoy — sin comparación, sin competencia', why: 'Las mujeres fuertes elevan a las demás. El miedo compite, el amor construye.' },
-        { emoji: '🏡', title: 'Haz algo por tu hogar o espacio que lo haga más acogedor para los tuyos', why: 'El nido que cuidas es el primer campo de entrenamiento de quienes amas' },
-        { emoji: '🌸', title: 'Cuida tu feminidad hoy — un gesto de belleza, descanso o conexión contigo', why: 'Honrar tu diseño es darle gloria al Creador que te hizo diferente con propósito' },
-        { emoji: '📖', title: 'Lee o escucha algo que nutra tu espíritu (no las redes sociales)', why: 'La atleta de Dios se nutre por dentro para poder dar por fuera' },
+        { emoji: '💪', title: 'Motiva a alguien que empieza en el templo hoy', why: 'La fuerza femenina que inspira cambia generaciones enteras' },
+        { emoji: '👂', title: 'Escucha con el alma a alguien que sufre', why: 'Tu capacidad de nutrir emocionalmente es tu fuerza más poderosa' },
+        { emoji: '🌸', title: 'Embellece tu entorno con un acto de orden y armonía', why: 'La mujer sabia transforma el caos en paz con solo su presencia' },
+        { emoji: '💕', title: 'Anima a otra mujer de tu entorno hoy — sin comparación', why: 'Las mujeres fuertes elevan a las demás. El miedo compite, el amor construye.' },
+        { emoji: '📖', title: 'Lee o escucha algo que nutra tu espíritu (no las redes)', why: 'La atleta de Dios se nutre por dentro para poder dar por fuera' },
     ],
     lider: [
-        { emoji: '🙏', title: 'Escribe una intención de amor para alguien de tu familia antes de comenzar el día', why: 'La mujer líder que guía su hogar en amor tiene autoridad real, no impostada' },
-        { emoji: '🤗', title: 'Da un abrazo genuino o un gesto físico de afecto a alguien hoy', why: 'El toque humano libera oxitocina — el pegamento que une familias y equipos' },
-        { emoji: '🛌', title: 'Duerme sin el teléfono al lado esta noche — un acto de confianza en Dios', why: 'La mujer que descansa confía. La que no puede parar, no ha soltado el control' },
-        { emoji: '🎁', title: 'Regala algo pequeño hoy — tiempo, atención, una frase escrita a mano', why: 'Los regalos sin precio son los que más larga huella dejan en el corazón' },
-        { emoji: '🙅', title: 'Di "no" a algo hoy sin culpa ni excusa — solo "no puedo en este momento"', why: 'Los límites de la mujer lider son santos: protegen su energía y su propósito' },
+        { emoji: '👂', title: 'Escucha con el alma a alguien que sufre', why: 'La líder que sabe sanar corazones tiene lealtad eterna de su gente' },
+        { emoji: '📈', title: 'Ayuda a un empleado o colaborador a crecer hoy', why: 'La maternidad espiritual en los negocios crea empresas invencibles' },
+        { emoji: '🌸', title: 'Embellece tu entorno con un acto de orden y armonía', why: 'El diseño divino de la mujer trae belleza a los lugares más fríos' },
+        { emoji: '🙏', title: 'Escribe una intención de amor para alguien de tu familia', why: 'La mujer líder que guía su hogar en amor tiene autoridad real, no impostada' },
+        { emoji: '🙅', title: 'Di "no" a algo hoy sin culpa ni excusa', why: 'Los límites de la mujer líder son santos: protegen su energía y su propósito' },
     ],
     explorador: [
-        { emoji: '🙏', title: 'Agradece a Dios por algo de tu cuerpo que normalmente criticas', why: 'La paz con tu diseño físico es la base de toda exploración auténtica' },
-        { emoji: '🌺', title: 'Lleva algo hermoso al día de alguien — flores, comida casera, una nota', why: 'La mujer exploradora transforma ambientes con su paso, no solo con sus words' },
+        { emoji: '👂', title: 'Escucha con el alma a alguien que sufre', why: 'Ser refugio seguro es la mayor conquista de la mujer sabia' },
+        { emoji: '🌸', title: 'Embellece tu entorno con un acto de orden y armonía', why: 'Donde la mujer exploradora pisa, el Edén florece de nuevo' },
         { emoji: '🤝', title: 'Conecta a dos personas que deberían conocerse hoy', why: 'Los puentes que construyen las mujeres pueden cambiar destinos completos' },
         { emoji: '📝', title: 'Escribe en un diario: qué aprendiste esta semana sobre ti misma', why: 'El autoconocimiento es el mapa de la exploradora más valiente' },
-        { emoji: '🌟', title: 'Celebra un logro propio sin minimizarlo ni compararlo con nadie', why: 'Dios se da gloria cuando sus hijos/hijas valoran lo que Él construyó en ellos' },
+        { emoji: '🌟', title: 'Celebra un logro propio sin minimizarlo ni compararlo', why: 'Dios se da gloria cuando sus hijas valoran lo que Él construyó en ellas' },
     ],
 };
 
