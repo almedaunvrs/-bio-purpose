@@ -148,6 +148,49 @@ const BOOTING_MESSAGES = [
     'Conectando biometría...',
 ];
 
+// ─── RestrictionGroup — chip multi-select ────────────────────────────────────
+interface RestrictionGroupProps {
+    title: string;
+    icon: string;
+    subtitle: string;
+    options: string[];
+    selected: string[];
+    onToggle: (item: string) => void;
+    noRestrictionLabel: string;
+}
+
+function RestrictionGroup({ title, icon, subtitle, options, selected, onToggle, noRestrictionLabel }: RestrictionGroupProps) {
+    return (
+        <div className="space-y-3">
+            <div className="flex items-center gap-2">
+                <span>{icon}</span>
+                <div>
+                    <p className="text-sm font-medium text-neutral-800">{title}</p>
+                    <p className="text-[10px] text-neutral-400 font-light">{subtitle}</p>
+                </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+                {options.map(option => (
+                    <button
+                        key={option}
+                        type="button"
+                        onClick={() => onToggle(option)}
+                        className={`text-xs px-3 py-1.5 rounded-full border transition-all duration-150 ${selected.includes(option)
+                                ? 'bg-red-500 text-white border-red-500'
+                                : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'
+                            }`}
+                    >
+                        {selected.includes(option) ? '✕ ' : ''}{option}
+                    </button>
+                ))}
+            </div>
+            {selected.length === 0 && (
+                <p className="text-[10px] text-emerald-600 font-medium">✓ {noRestrictionLabel}</p>
+            )}
+        </div>
+    );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function Onboarding() {
@@ -165,6 +208,13 @@ export function Onboarding() {
         injuries: 'ninguna',
         mainGoal: '',
     });
+
+    // Biological Restrictions (Interferencias)
+    const [foodAllergies, setFoodAllergies] = useState<string[]>([]);
+    const [foodIntolerances, setFoodIntolerances] = useState<string[]>([]);
+    const [medicalConditions, setMedicalConditions] = useState<string[]>([]);
+    const [restrictionsPhase, setRestrictionsPhase] = useState<'pending' | 'confirmed'>('pending');
+
 
     // Boot sequence
     useEffect(() => {
@@ -209,8 +259,14 @@ export function Onboarding() {
         if (currentStep < STEPS.length - 1) {
             setCurrentStep(prev => prev + 1);
         } else {
-            buildFinalProfile();
+            // Show Interferencias step before finalizing
+            setPhase('interferencias' as any);
         }
+    };
+
+    const confirmRestrictions = () => {
+        setRestrictionsPhase('confirmed');
+        setTimeout(() => buildFinalProfile(), 800);
     };
 
     const goBack = () => {
@@ -250,6 +306,9 @@ export function Onboarding() {
                     sleepQuality: answers.sleepQuality || 'regular',
                     stressLevel: Number(answers.stressLevel) || 5,
                     location: answers.location || 'México',
+                    foodAllergies,
+                    foodIntolerances,
+                    medicalConditions,
                 }),
             });
 
@@ -284,6 +343,11 @@ export function Onboarding() {
                         location: loc,
                         timezone: tz,
                         injuries: answers.injuries || 'ninguna',
+                        biologicalRestrictions: {
+                            foodAllergies,
+                            foodIntolerances,
+                            medicalConditions,
+                        },
                         mission: (geminiResult.mission as Mission) || 'lider',
                         mainGoal: answers.mainGoal || '',
                         geminiProtocol: {
@@ -340,6 +404,11 @@ export function Onboarding() {
                     injuries: answers.injuries || 'ninguna',
                     mission: 'lider',
                     mainGoal: answers.mainGoal || '',
+                    biologicalRestrictions: {
+                        foodAllergies,
+                        foodIntolerances,
+                        medicalConditions,
+                    },
                 } as any);
             }, 2000);
         }
@@ -368,6 +437,90 @@ export function Onboarding() {
                                     </motion.p>
                                 ))}
                             </div>
+                        </motion.div>
+                    )}
+
+                    {/* INTERFERENCIAS PHASE */}
+                    {(phase as string) === 'interferencias' && (
+                        <motion.div key="interferencias" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8">
+                            {restrictionsPhase === 'pending' ? (
+                                <>
+                                    {/* Header */}
+                                    <div className="space-y-2">
+                                        <p className="text-[10px] uppercase tracking-[0.4em] text-neutral-400">TEMPLO OS // PASO FINAL</p>
+                                        <h2 className="text-3xl md:text-4xl font-extralight text-neutral-900 leading-tight">
+                                            Identificación de<br /><span className="text-amber-500">Interferencias</span>
+                                        </h2>
+                                        <p className="text-sm font-light text-neutral-500 leading-relaxed max-w-md">
+                                            Este escaneo asegura que la información divina no choque con la realidad actual de tu cuerpo. Tu protocolo será 100% seguro para tu diseño único.
+                                        </p>
+                                    </div>
+
+                                    {/* Alergias */}
+                                    <RestrictionGroup
+                                        title="Alergias Alimentarias"
+                                        icon="🚫"
+                                        subtitle="El agente tiene prohibido incluir estos alimentos"
+                                        options={['Frutos secos', 'Mariscos', 'Huevo', 'Soya', 'Trigo', 'Pescado', 'Ajonjolí', 'Mostaza']}
+                                        selected={foodAllergies}
+                                        onToggle={(item) => setFoodAllergies(prev => prev.includes(item) ? prev.filter(x => x !== item) : [...prev, item])}
+                                        noRestrictionLabel="Sin alergias"
+                                    />
+
+                                    {/* Intolerancias */}
+                                    <RestrictionGroup
+                                        title="Intolerancias"
+                                        icon="⚠️"
+                                        subtitle="Lactosa ya está bloqueada por Ley IV. Agrega otras si aplica."
+                                        options={['Gluten', 'Fructosa', 'Sorbitol', 'Histamina', 'FODMAP', 'Cafeína']}
+                                        selected={foodIntolerances}
+                                        onToggle={(item) => setFoodIntolerances(prev => prev.includes(item) ? prev.filter(x => x !== item) : [...prev, item])}
+                                        noRestrictionLabel="Solo lactosa (Ley IV base)"
+                                    />
+
+                                    {/* Condiciones médicas */}
+                                    <RestrictionGroup
+                                        title="Condiciones Médicas"
+                                        icon="🏥"
+                                        subtitle="El agente adapta macros y alimentos a tu condición"
+                                        options={['Diabetes tipo 2', 'Hipertensión', 'Problemas renales', 'Hipotiroidismo', 'Síndrome de intestino irritable', 'Gota', 'Celiaquía']}
+                                        selected={medicalConditions}
+                                        onToggle={(item) => setMedicalConditions(prev => prev.includes(item) ? prev.filter(x => x !== item) : [...prev, item])}
+                                        noRestrictionLabel="Sin condiciones médicas"
+                                    />
+
+                                    {/* Confirm button */}
+                                    <button
+                                        onClick={confirmRestrictions}
+                                        className="w-full py-4 rounded-2xl font-medium text-sm uppercase tracking-widest transition-all duration-200 bg-neutral-900 text-white hover:bg-neutral-700"
+                                    >
+                                        Activar Escudo Biológico →
+                                    </button>
+                                </>
+                            ) : (
+                                /* Safety confirmation */
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="text-center space-y-6 py-12"
+                                >
+                                    <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        transition={{ type: 'spring', damping: 12, stiffness: 200 }}
+                                        className="w-20 h-20 rounded-full bg-emerald-500 flex items-center justify-center mx-auto"
+                                    >
+                                        <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </motion.div>
+                                    <div className="space-y-2">
+                                        <p className="text-2xl font-extralight text-neutral-900">Filtros de Seguridad Activados</p>
+                                        <p className="text-sm font-light text-emerald-600">Tu protocolo es ahora 100% seguro para tu diseño único.</p>
+                                        <p className="text-xs text-neutral-400 mt-4">Generando tu protocolo personalizado...</p>
+                                    </div>
+                                </motion.div>
+                            )}
                         </motion.div>
                     )}
 

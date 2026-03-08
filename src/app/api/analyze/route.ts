@@ -10,8 +10,27 @@ Mantra: "Biología Divina. Tecnología Humana." Slogan: "Original Design. Future
 Tu misión: No mantener el peso del usuario. PROYECTAR el cuerpo que su sueño exige.
 
 ════════════════════════════════════════════
-PASO 0 — FILTRO DE SENSATEZ BIOLÓGICA (OBLIGATORIO)
+PASO -1 — REGLAS BIOLÓGICAS INQUEBRANTABLES (RESTRICCIONES)
 ════════════════════════════════════════════
+
+Este paso tiene PRIORIDAD ABSOLUTA sobre cualquier otro. Antes de generar ningún plan:
+
+1. Lee el bloque de INTERFERENCIAS BIO-INDIVIDUALES en el prompt del usuario.
+2. Toda alergia, intolerancia y condición médica registrada es una REGLA INQUEBRANTABLE.
+3. Tienes ESTRICTAMENTE PROHIBIDO incluir, sugerir o mencionar como alternativa ningún alimento que
+   conste en la lista de alergias o intolerancias del usuario.
+4. Si el alimento es una base estructural del plan (ej: huevos para alergia a huevo), busca la
+   alternativa biológica más cercana que cumpla la MISMA función estructural/nutricional.
+5. Para condiciones médicas:
+   - Diabetes: cero azúcares simples, carbohidratos con carga glucémica mínima
+   - Hipertensión: sodio máximo 1500mg/día
+   - Problemas renales: protéina máximo 1.0g/kg peso
+   - Hipotiroidismo: cero soja, limitar crucifíreas crudas
+6. LEY TEMPLO BASE: Lactosa está SIEMPRE bloqueada (Ley IV - Pureza Sistémica). Aún sin intolerancia
+   declarada, ningún derivado lácteo animal entra en el protocolo.
+7. Cuando hagas una sustitución por restricción, incluyé el campo "safetyNote" explicando la
+   protección activa de manera positiva y empoderada.
+
 
 Antes de cualquier cálculo, hazte esta pregunta internamente:
 "¿Es físicamente posible que esta persona cumpla su sueño con su composición corporal actual?"
@@ -142,7 +161,8 @@ ESQUEMA JSON — RESPONDE SOLO CON ESTO, SIN TEXTO EXTRA
     "Insight 3 accionable"
   ],
   "firstAction": "Primera acción concreta y específica mañana al despertar. Poética y motivadora.",
-  "wisdom": "Una verdad profunda sobre la conexión entre el sueño y la biología. SIEMPRE incluir."
+  "wisdom": "Una verdad profunda sobre la conexión entre el sueño y la biología. SIEMPRE incluir.",
+  "safetyNote": "Si hubo restricciones activas, explica positivamente cómo el protocolo fue blindado para ESTE templo específico. Si no hubo restricciones, deja null."
 }
 `;
 
@@ -152,6 +172,7 @@ export async function POST(req: NextRequest) {
         const {
             mainGoal, biologicalSex, age, heightCm, weightKg,
             bodyType, activityLevel, sleepQuality, stressLevel, location,
+            foodAllergies = [], foodIntolerances = [], medicalConditions = [],
         } = body;
 
         if (!mainGoal || !weightKg || !heightCm) {
@@ -170,10 +191,30 @@ export async function POST(req: NextRequest) {
         const leanMass = Number(weightKg) * (1 - estimatedBodyFat / 100);
         const ffmi = leanMass / (heightM * heightM);
 
+        const allAllergies = [...(foodAllergies as string[]), ...(foodIntolerances as string[])];
+        const hasRestrictions = allAllergies.length > 0 || (medicalConditions as string[]).length > 0;
+
+        const restrictionsBlock = hasRestrictions ? `
+⚠️ INTERFERENCIAS BIO-INDIVIDUALES REGISTRADAS — REGLAS INQUEBRANTABLES:
+${(foodAllergies as string[]).length > 0
+                ? `ALERGIAS (PROHIBICIÓN ABSOLUTA): ${(foodAllergies as string[]).join(', ')}`
+                : ''
+            }
+${(foodIntolerances as string[]).length > 0
+                ? `INTOLERANCIAS (PROHIBICIÓN ABSOLUTA): ${(foodIntolerances as string[]).join(', ')}`
+                : ''
+            }
+${(medicalConditions as string[]).length > 0
+                ? `CONDICIONES MÉDICAS (ADAPTACIONES OBLIGATORIAS): ${(medicalConditions as string[]).join(', ')}`
+                : ''
+            }
+NINGÚN alimento de las listas anteriores puede aparecer en el plan. Sustituye con la alternativa biológica más cercana.
+` : 'Sin interferencias declaradas (aplica Ley IV base: cero lactosa)';
+
         const userPrompt = `
 SUEÑO DEL ALMA: "${mainGoal}"
 
-DATOS BIOLÓGICOS ACTUALES:
+DATA BIOLÓGICOS ACTUALES:
 - Sexo: ${biologicalSex} | Edad: ${age} años
 - Estatura: ${heightCm}cm | Peso actual: ${weightKg}kg
 - IMC actual: ${bmi.toFixed(1)} | FFMI estimado: ${ffmi.toFixed(1)}
@@ -183,14 +224,17 @@ DATOS BIOLÓGICOS ACTUALES:
 - Ubicación: ${location || 'México'}
 - Fase cronobiológica actual: ${chronoContext}
 
-INSTRUCCIONES ESPECIALES:
-1. Evalúa si el IMC/FFMI actual es compatible con el sueño. Si no, calcula el peso meta real.
-2. Detecta si el sueño es híbrido (múltiples arquetipos) y fusiona las necesidades.
-3. Calcula porciones EXACTAS en gramos con traducciones visuales.
-4. Genera el gapMessage con dopamina (peso actual → meta + timeline).
-5. Aplica el filtro de sensatez: ¿puede esta persona cumplir su sueño con este cuerpo actual?
+${restrictionsBlock}
 
-Responde ÚNICAMENTE con el JSON.
+INSTRUCCIONES ESPECIALES:
+1. Aplica PRIMERO las reglas de interferencias bio-individuales antes de cualquier cálculo.
+2. Evalúa si el IMC/FFMI actual es compatible con el sueño. Si no, calcula el peso meta real.
+3. Detecta si el sueño es híbrido (múltiples arquetipos) y fusiona las necesidades.
+4. Calcula porciones EXACTAS en gramos con traducciones visuales.
+5. Genera el gapMessage con dopamina (peso actual → meta + timeline).
+6. Si hubo sustituciones por restricciones, explica en safetyNote de manera positiva y empoderada.
+
+Responde ÚINICAMENTE con el JSON.
 `;
 
         const model = genAI.getGenerativeModel({

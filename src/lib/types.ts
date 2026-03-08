@@ -110,6 +110,13 @@ export interface UserProfile {
   timezone: string;
   injuries: string;
 
+  // Biological Restrictions (Hard Constraints)
+  biologicalRestrictions: {
+    foodAllergies: string[];       // e.g. ['frutos secos', 'mariscos']
+    foodIntolerances: string[];    // e.g. ['lactosa', 'gluten']
+    medicalConditions: string[];   // e.g. ['diabetes', 'hipertension']
+  };
+
   // Goal
   mission: Mission;
   mainGoal: string;
