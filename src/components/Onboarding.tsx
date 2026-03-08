@@ -1,165 +1,185 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUserStore } from '@/store/useUserStore';
 import { Mission } from '@/lib/types';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, ArrowRight } from 'lucide-react';
+import { ArrowRight, Hexagon } from 'lucide-react';
 
 export function Onboarding() {
     const setProfile = useUserStore((state) => state.setProfile);
 
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useState(0);
     const [formData, setFormData] = useState({
-        age: '24',
-        heightCm: '168',
-        weightKg: '58',
-        goalWeightKg: '65',
-        bodyFatPercentage: '12',
-        mission: 'atleta' as Mission,
+        age: '',
+        heightCm: '',
+        weightKg: '',
+        goalWeightKg: '',
+        bodyFatPercentage: '',
+        mission: '' as Mission,
     });
+
+    // Simulate AI Booting
+    useEffect(() => {
+        if (step === 0) {
+            const timer = setTimeout(() => setStep(1), 2500);
+            return () => clearTimeout(timer);
+        }
+    }, [step]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleNext = () => setStep(prev => prev + 1);
+    const handleNext = () => {
+        if (step === 1) {
+            // Validate inputs minimally for effect
+            if (!formData.age || !formData.heightCm || !formData.weightKg || !formData.goalWeightKg) return;
+            setStep(2);
+        }
+    };
 
-    const handleComplete = () => {
-        setProfile({
-            age: Number(formData.age),
-            heightCm: Number(formData.heightCm),
-            weightKg: Number(formData.weightKg),
-            goalWeightKg: Number(formData.goalWeightKg),
-            bodyFatPercentage: Number(formData.bodyFatPercentage),
-            mission: formData.mission,
-        });
+    const handleMissionSelect = (mission: Mission) => {
+        setFormData(prev => ({ ...prev, mission }));
+        // Small delay to feel like processing
+        setTimeout(() => {
+            setProfile({
+                age: Number(formData.age),
+                heightCm: Number(formData.heightCm),
+                weightKg: Number(formData.weightKg),
+                goalWeightKg: Number(formData.goalWeightKg),
+                bodyFatPercentage: Number(formData.bodyFatPercentage || 12),
+                mission,
+            });
+        }, 1500);
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-background font-mono relative overflow-hidden font-[family-name:var(--font-space-grotesk)] text-foreground">
-            {/* Elegant background typography - very subtle */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.02] font-[family-name:var(--font-anton)] text-[20vw] tracking-tighter pointer-events-none whitespace-nowrap">
-                PURPOSE
+
+            {/* Elegance & Sacred Geometry Backgrounds */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.03)_0%,rgba(0,0,0,0)_50%)] pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-5 pointer-events-none">
+                <Hexagon className="w-[120vh] h-[120vh] text-primary" strokeWidth={0.2} />
             </div>
 
-            <Card className="w-full max-w-lg bg-card/40 backdrop-blur-md border border-border/50 shadow-2xl relative z-10 rounded-sm overflow-hidden">
-                {/* Minimalist Top Bar */}
-                <div className="px-8 py-5 border-b border-border/30 flex justify-between items-center text-xs tracking-[0.2em] text-muted-foreground uppercase">
-                    <span>Templo en Movimiento</span>
-                    <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" /> Live</span>
-                </div>
+            <div className="w-full max-w-2xl relative z-10 flex flex-col items-center">
 
-                <CardHeader className="text-center space-y-2 pt-10 pb-4">
-                    <CardTitle className="text-4xl md:text-5xl uppercase tracking-tighter font-[family-name:var(--font-anton)] text-foreground">
-                        BIO-PURPOSE
-                    </CardTitle>
-                    <p className="text-xs uppercase tracking-[0.3em] text-primary font-medium">
-                        Protocolo de Inicio
-                    </p>
-                </CardHeader>
+                <AnimatePresence mode="wait">
+                    {/* Booting Sequence */}
+                    {step === 0 && (
+                        <motion.div
+                            key="boot"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="text-center space-y-4"
+                        >
+                            <Hexagon className="w-12 h-12 text-primary mx-auto animate-[spin_4s_linear_infinite]" strokeWidth={1} />
+                            <p className="tracking-[0.4em] text-xs uppercase text-muted-foreground animate-pulse">Iniciando TEMPLO OS</p>
+                            <p className="font-[family-name:var(--font-anton)] text-2xl tracking-widest text-primary pt-4 uppercase">
+                                Biología Divina. Tecnología Humana.
+                            </p>
+                        </motion.div>
+                    )}
 
-                <CardContent className="px-8 pt-4 pb-12">
-                    <AnimatePresence mode="wait">
-                        {step === 1 && (
-                            <motion.div
-                                key="step1"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.3 }}
-                                className="space-y-8"
-                            >
-                                <div className="space-y-6">
-                                    <div className="grid grid-cols-2 gap-8">
-                                        <div className="space-y-3">
-                                            <Label htmlFor="age" className="font-semibold uppercase text-[10px] tracking-widest text-muted-foreground">Edad</Label>
-                                            <Input id="age" name="age" type="number" value={formData.age} onChange={handleChange} className="bg-transparent border-0 border-b border-border/50 rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary transition-colors font-medium text-2xl h-auto" />
-                                        </div>
-                                        <div className="space-y-3">
-                                            <Label htmlFor="heightCm" className="font-semibold uppercase text-[10px] tracking-widest text-muted-foreground">Estatura (cm)</Label>
-                                            <Input id="heightCm" name="heightCm" type="number" value={formData.heightCm} onChange={handleChange} className="bg-transparent border-0 border-b border-border/50 rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary transition-colors font-medium text-2xl h-auto" />
-                                        </div>
+                    {/* Step 1: Biometric Intake */}
+                    {step === 1 && (
+                        <motion.div
+                            key="step1"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.6, ease: "easeOut" }}
+                            className="w-full"
+                        >
+                            <div className="text-center mb-16 space-y-4">
+                                <p className="text-primary text-[10px] uppercase tracking-[0.4em] font-semibold border-b border-primary/20 inline-block pb-1">Identidad requerida</p>
+                                <h1 className="text-3xl md:text-5xl font-[family-name:var(--font-anton)] uppercase tracking-wide leading-tight">
+                                    Calibración del <br /><span className="text-muted-foreground">Templo</span>
+                                </h1>
+                            </div>
+
+                            <div className="bg-card backdrop-blur-xl border border-white/5 p-8 md:p-12 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col gap-8 relative overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+
+                                <div className="grid grid-cols-2 gap-8 md:gap-12">
+                                    <div className="space-y-2 relative group">
+                                        <label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">Edad</label>
+                                        <input name="age" type="number" value={formData.age} onChange={handleChange} className="w-full bg-transparent border-b border-white/10 py-2 text-2xl font-light focus:outline-none focus:border-primary transition-colors text-foreground placeholder:text-white/10" placeholder="00" />
                                     </div>
-
-                                    <div className="grid grid-cols-2 gap-8">
-                                        <div className="space-y-3">
-                                            <Label htmlFor="weightKg" className="font-semibold uppercase text-[10px] tracking-widest text-muted-foreground">Peso Actual (kg)</Label>
-                                            <Input id="weightKg" name="weightKg" type="number" value={formData.weightKg} onChange={handleChange} className="bg-transparent border-0 border-b border-border/50 rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary transition-colors font-medium text-2xl h-auto" />
-                                        </div>
-                                        <div className="space-y-3">
-                                            <Label htmlFor="goalWeightKg" className="font-semibold uppercase text-[10px] tracking-widest text-muted-foreground">Meta (kg)</Label>
-                                            <Input id="goalWeightKg" name="goalWeightKg" type="number" value={formData.goalWeightKg} onChange={handleChange} className="bg-transparent border-0 border-b border-border/50 rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary transition-colors font-medium text-2xl h-auto" />
-                                        </div>
+                                    <div className="space-y-2 relative group">
+                                        <label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">Estatura (cm)</label>
+                                        <input name="heightCm" type="number" value={formData.heightCm} onChange={handleChange} className="w-full bg-transparent border-b border-white/10 py-2 text-2xl font-light focus:outline-none focus:border-primary transition-colors text-foreground placeholder:text-white/10" placeholder="000" />
                                     </div>
-
-                                    <div className="space-y-3 pt-2">
-                                        <Label htmlFor="bodyFatPercentage" className="font-semibold uppercase text-[10px] tracking-widest text-muted-foreground">% Grasa Corporal (Est. 10-15%)</Label>
-                                        <Input id="bodyFatPercentage" name="bodyFatPercentage" type="number" value={formData.bodyFatPercentage} onChange={handleChange} className="bg-transparent border-0 border-b border-border/50 rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary transition-colors font-medium text-2xl h-auto" />
+                                    <div className="space-y-2 relative group">
+                                        <label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">Peso Actual (kg)</label>
+                                        <input name="weightKg" type="number" value={formData.weightKg} onChange={handleChange} className="w-full bg-transparent border-b border-white/10 py-2 text-2xl font-light focus:outline-none focus:border-primary transition-colors text-foreground placeholder:text-white/10" placeholder="00.0" />
                                     </div>
-
-                                    <div className="pt-8">
-                                        <Button onClick={handleNext} className="w-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground rounded-sm transition-all h-14 font-[family-name:var(--font-space-grotesk)] text-sm uppercase tracking-[0.2em] font-medium group">
-                                            Continuar <ArrowRight className="ml-4 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                                        </Button>
+                                    <div className="space-y-2 relative group">
+                                        <label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">Meta de Peso</label>
+                                        <input name="goalWeightKg" type="number" value={formData.goalWeightKg} onChange={handleChange} className="w-full bg-transparent border-b border-white/10 py-2 text-2xl font-light focus:outline-none focus:border-primary transition-colors text-foreground placeholder:text-white/10" placeholder="00.0" />
                                     </div>
                                 </div>
-                            </motion.div>
-                        )}
 
-                        {step === 2 && (
-                            <motion.div
-                                key="step2"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.3 }}
-                                className="space-y-8"
-                            >
-                                <div className="space-y-8">
-                                    <div className="space-y-4 pt-2">
-                                        <Label className="font-[family-name:var(--font-anton)] text-2xl uppercase tracking-wide text-foreground">Definición de Propósito</Label>
-                                        <Select defaultValue={formData.mission} onValueChange={(val) => { if (val) setFormData(p => ({ ...p, mission: val as Mission })) }}>
-                                            <SelectTrigger className="w-full h-14 bg-transparent border-0 border-b border-border/50 rounded-none px-0 focus:ring-0 font-medium text-lg uppercase tracking-wide">
-                                                <SelectValue placeholder="Elige tu sueño..." />
-                                            </SelectTrigger>
-                                            <SelectContent className="border-border/50 bg-card rounded-sm shadow-xl font-medium uppercase text-xs tracking-wider">
-                                                <SelectItem value="explorador" className="py-3 focus:bg-primary focus:text-primary-foreground cursor-pointer">01 — Explorador</SelectItem>
-                                                <SelectItem value="atleta" className="py-3 focus:bg-primary focus:text-primary-foreground cursor-pointer">02 — Atleta Alto Rendimiento</SelectItem>
-                                                <SelectItem value="lider" className="py-3 focus:bg-primary focus:text-primary-foreground cursor-pointer">03 — Líder Creativo</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-
-                                    <div className="p-6 border border-border/30 bg-background/30 rounded-sm mt-8 flex flex-col gap-4">
-                                        <div className="flex items-center gap-3">
-                                            <Activity className="w-5 h-5 text-primary" />
-                                            <span className="font-semibold uppercase tracking-[0.2em] text-[10px] text-muted-foreground">Aviso del Sistema</span>
-                                        </div>
-                                        <p className="text-sm font-medium leading-relaxed opacity-80">
-                                            Toda formulación será 100% Lactose-Free. Diseñado para impacto profundo y estética funcional.
-                                        </p>
-                                    </div>
-
-                                    <div className="flex gap-4 pt-6">
-                                        <Button variant="outline" onClick={() => setStep(1)} className="w-1/3 border-border/50 bg-transparent text-foreground hover:bg-foreground hover:text-background rounded-sm transition-all h-14 text-xs font-bold uppercase tracking-widest">
-                                            Atrás
-                                        </Button>
-                                        <Button onClick={handleComplete} className="w-2/3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-sm transition-all h-14 font-[family-name:var(--font-space-grotesk)] text-sm uppercase tracking-[0.2em] font-medium">
-                                            Iniciar Protocolo
-                                        </Button>
-                                    </div>
+                                <div className="pt-8 flex justify-end">
+                                    <button
+                                        onClick={handleNext}
+                                        className="group relative px-8 py-4 bg-foreground text-background font-semibold text-xs uppercase tracking-[0.2em] overflow-hidden rounded-full hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-500"
+                                    >
+                                        <span className="relative z-10 flex items-center gap-2">Sincronizar <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></span>
+                                        <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out" />
+                                    </button>
                                 </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </CardContent>
-            </Card>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {/* Step 2: Mission Selection */}
+                    {step === 2 && (
+                        <motion.div
+                            key="step2"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.05 }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            className="w-full max-w-3xl"
+                        >
+                            <div className="text-center mb-16 space-y-4">
+                                <p className="text-primary text-[10px] uppercase tracking-[0.4em] font-semibold">Parámetro Final</p>
+                                <h1 className="text-3xl md:text-5xl font-[family-name:var(--font-anton)] uppercase tracking-wide leading-tight">
+                                    Selecciona el Sueño <br /><span className="text-muted-foreground">de tu Alma</span>
+                                </h1>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {[
+                                    { id: 'explorador', title: 'Explorador', desc: 'Resistencia, Energía Constante, Adaptabilidad.' },
+                                    { id: 'atleta', title: 'Atleta', desc: 'Explosividad, Hipertrofia, Recuperación Rápida.' },
+                                    { id: 'lider', title: 'Líder Creativo', desc: 'Claridad Mental, Enfoque, Neuro-protección.' }
+                                ].map((item) => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => handleMissionSelect(item.id as Mission)}
+                                        className="group relative p-8 bg-card backdrop-blur-md border border-white/5 rounded-3xl hover:border-primary/50 transition-all duration-500 text-left overflow-hidden"
+                                    >
+                                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                        <Hexagon className="w-6 h-6 text-primary mb-6 opacity-50 group-hover:opacity-100 group-hover:rotate-90 transition-all duration-700" strokeWidth={1} />
+                                        <h3 className="text-xl font-[family-name:var(--font-anton)] uppercase tracking-wider mb-2 group-hover:text-primary transition-colors">{item.title}</h3>
+                                        <p className="text-xs text-muted-foreground font-light leading-relaxed">{item.desc}</p>
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="mt-16 text-center">
+                                <p className="text-[10px] uppercase tracking-[0.3em] font-medium opacity-50 border border-white/10 px-4 py-2 rounded-full inline-block backdrop-blur-sm">
+                                    Protocolo 100% Lactose-Free
+                                </p>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
         </div>
     );
 }
