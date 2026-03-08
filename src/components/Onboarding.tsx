@@ -395,8 +395,8 @@ export function Onboarding() {
 
                             {/* Question */}
                             <div className="space-y-3 pt-4">
-                                <h2 className="text-2xl md:text-4xl font-[family-name:var(--font-anton)] uppercase tracking-wide leading-tight">{step.question}</h2>
-                                {step.subtitle && <p className="text-sm text-muted-foreground font-light leading-relaxed max-w-lg">{step.subtitle}</p>}
+                                <h2 className="text-2xl md:text-4xl font-extralight text-neutral-900 leading-tight tracking-tight">{step.question}</h2>
+                                {step.subtitle && <p className="text-sm text-neutral-500 font-light leading-relaxed max-w-lg">{step.subtitle}</p>}
                             </div>
 
                             {/* Answer Area */}
@@ -408,13 +408,16 @@ export function Onboarding() {
                                             <button
                                                 key={c.value}
                                                 onClick={() => handleChoiceSelect(c.value)}
-                                                className={`group text-left p-5 border rounded-2xl transition-all duration-300 hover:border-primary/60 hover:bg-white/5 ${answers[step.id as keyof UserProfile] === c.value ? 'border-primary bg-primary/10' : 'border-white/10 bg-card/20'}`}
+                                                className={`group text-left p-5 border rounded-2xl transition-all duration-200 ${answers[step.id as keyof UserProfile] === c.value
+                                                        ? 'border-primary bg-primary/8 shadow-sm'
+                                                        : 'border-neutral-200 bg-white hover:border-neutral-300 hover:bg-neutral-50'
+                                                    }`}
                                             >
                                                 <div className="flex items-center justify-between">
-                                                    <span className="font-semibold uppercase tracking-wide text-sm">{c.label}</span>
+                                                    <span className="font-medium text-neutral-800 text-sm">{c.label}</span>
                                                     <ArrowRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                                                 </div>
-                                                {c.desc && <p className="text-xs text-muted-foreground mt-1 font-light">{c.desc}</p>}
+                                                {c.desc && <p className="text-xs text-neutral-500 mt-1 font-light">{c.desc}</p>}
                                             </button>
                                         ))}
                                     </div>
@@ -423,7 +426,7 @@ export function Onboarding() {
                                 {/* NUMBER */}
                                 {step.type === 'number' && (
                                     <div className="space-y-6">
-                                        <div className="flex items-end gap-4 border-b border-white/20 pb-2 focus-within:border-primary transition-colors">
+                                        <div className="flex items-end gap-4 border-b border-neutral-200 pb-2 focus-within:border-primary transition-colors">
                                             <input
                                                 type="number"
                                                 value={textValue}
@@ -431,13 +434,13 @@ export function Onboarding() {
                                                 placeholder={step.placeholder}
                                                 min={step.min}
                                                 max={step.max}
-                                                className="flex-1 bg-transparent text-4xl md:text-5xl font-light text-white focus:outline-none placeholder:text-white/15"
+                                                className="flex-1 bg-transparent text-4xl md:text-5xl font-extralight text-neutral-900 focus:outline-none placeholder:text-neutral-300"
                                                 onKeyDown={e => { if (e.key === 'Enter') handleTextConfirm(); }}
                                                 autoFocus
                                             />
-                                            {step.unit && <span className="text-lg text-muted-foreground mb-1">{step.unit}</span>}
+                                            {step.unit && <span className="text-lg text-neutral-400 mb-1">{step.unit}</span>}
                                         </div>
-                                        <button onClick={handleTextConfirm} disabled={!textValue.trim()} className="group flex items-center gap-3 text-sm font-semibold uppercase tracking-widest disabled:opacity-40 hover:text-primary transition-colors">
+                                        <button onClick={handleTextConfirm} disabled={!textValue.trim()} className="group flex items-center gap-3 text-sm font-medium uppercase tracking-widest text-neutral-600 disabled:opacity-30 hover:text-primary transition-colors">
                                             Confirmar <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                         </button>
                                     </div>
@@ -446,18 +449,18 @@ export function Onboarding() {
                                 {/* TEXT */}
                                 {step.type === 'text' && (
                                     <div className="space-y-6">
-                                        <div className="flex items-end gap-4 border-b border-white/20 pb-2 focus-within:border-primary transition-colors">
+                                        <div className="flex items-end gap-4 border-b border-neutral-200 pb-2 focus-within:border-primary transition-colors">
                                             <input
                                                 type="text"
                                                 value={textValue}
                                                 onChange={e => setTextValue(e.target.value)}
                                                 placeholder={step.placeholder}
-                                                className="flex-1 bg-transparent text-2xl md:text-3xl font-light text-white focus:outline-none placeholder:text-white/15"
+                                                className="flex-1 bg-transparent text-2xl md:text-3xl font-extralight text-neutral-900 focus:outline-none placeholder:text-neutral-300"
                                                 onKeyDown={e => { if (e.key === 'Enter') handleTextConfirm(); }}
                                                 autoFocus
                                             />
                                         </div>
-                                        <button onClick={handleTextConfirm} disabled={!textValue.trim()} className="group flex items-center gap-3 text-sm font-semibold uppercase tracking-widest disabled:opacity-40 hover:text-primary transition-colors">
+                                        <button onClick={handleTextConfirm} disabled={!textValue.trim()} className="group flex items-center gap-3 text-sm font-medium uppercase tracking-widest text-neutral-600 disabled:opacity-30 hover:text-primary transition-colors">
                                             Confirmar <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                         </button>
                                     </div>
@@ -471,13 +474,13 @@ export function Onboarding() {
                                             onChange={e => setTextValue(e.target.value)}
                                             placeholder={step.placeholder}
                                             rows={5}
-                                            className="w-full bg-card/20 border border-white/10 rounded-2xl px-6 py-5 text-lg font-light text-white focus:outline-none focus:border-primary/50 placeholder:text-white/15 transition-colors resize-none leading-relaxed"
+                                            className="w-full bg-white border border-neutral-200 rounded-2xl px-6 py-5 text-lg font-light text-neutral-900 focus:outline-none focus:border-primary placeholder:text-neutral-300 transition-colors resize-none leading-relaxed"
                                             autoFocus
                                         />
-                                        <button onClick={handleTextConfirm} disabled={!textValue.trim()} className="group flex items-center gap-3 text-sm font-semibold uppercase tracking-widest disabled:opacity-40 hover:text-primary transition-colors">
+                                        <button onClick={handleTextConfirm} disabled={!textValue.trim()} className="group flex items-center gap-3 text-sm font-medium uppercase tracking-widest text-neutral-600 disabled:opacity-30 hover:text-primary transition-colors">
                                             Activar Protocolo <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                         </button>
-                                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+                                        <p className="text-[10px] text-neutral-400 uppercase tracking-widest">
                                             La IA analizará tus palabras para calibrar el protocolo ideal.
                                         </p>
                                     </div>
