@@ -1,235 +1,317 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { useUserStore } from '@/store/useUserStore';
-import { calculateNutrition, getChrononutritionState } from '@/lib/algorithms';
+import { calculateNutrition } from '@/lib/algorithms';
 import { getWorkoutRoutine } from '@/lib/workouts';
-import { LogOut, Diamond, Activity, Zap, Moon, Flame } from 'lucide-react';
+import { MISSION_THEMES, UserProfile } from '@/lib/types';
+import { ChronoTimeline } from './ChronoTimeline';
+import { TrinidadVerdad, TEMPLO_LEYES } from './TrinidadVerdad';
+import { ElectrolytosWidget } from './ElectrolytosWidget';
+import { BisetCard } from './BisetCard';
+import { RevelacionWrapper } from './RevelacionWrapper';
 
-const BODY_TYPE_LABEL: Record<string, string> = {
-    ectomorfo: 'Ectomorfo',
-    mesomorfo: 'Mesomorfo',
-    endomorfo: 'Endomorfo',
+const STAGGER = {
+    container: { transition: { staggerChildren: 0.1 } },
+    item: { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } },
 };
 
 const ACTIVITY_LABEL: Record<string, string> = {
-    sedentario: 'Sedentario',
-    moderado: 'Moderado',
-    activo: 'Activo',
-    muy_activo: 'Muy Activo',
-};
-
-const SLEEP_LABEL: Record<string, string> = {
-    mala: 'Deficiente',
-    regular: 'Regular',
-    buena: 'Óptimo',
+    sedentario: 'Sedentario', moderado: 'Moderado', activo: 'Activo', muy_activo: 'Muy Activo',
 };
 
 export function Dashboard() {
     const { profile, resetProfile } = useUserStore();
-
     if (!profile) return null;
 
-    const nutrition = calculateNutrition(profile);
-    const chrono = getChrononutritionState(profile.timezone);
-    const routine = getWorkoutRoutine(profile.mission);
+    const p = profile as UserProfile;
+    const theme = MISSION_THEMES[p.mission];
+    const proto = p.geminiProtocol;
+    const nutrition = calculateNutrition(p);
+    const routine = getWorkoutRoutine(p.mission);
 
-    // Use Gemini macros if available (more accurate), else fall back to local algorithm
-    const calories = profile.geminiCalories ?? nutrition.calories;
-    const protein = profile.geminiProtein ?? nutrition.proteinGrams;
-    const carbs = profile.geminiCarbs ?? nutrition.carbsGrams;
-    const fats = profile.geminiFats ?? nutrition.fatsGrams;
+    // Use Gemini macros if available
+    const calories = proto?.calories ?? nutrition.calories;
+    const protein = proto?.proteinGrams ?? nutrition.proteinGrams;
+    const carbs = proto?.carbsGrams ?? nutrition.carbsGrams;
+    const fats = proto?.fatsGrams ?? nutrition.fatsGrams;
+
+    const macros = [
+        { label: 'Proteína', value: protein, unit: 'g', abbr: 'PRO' },
+        { label: 'Carbohidratos', value: carbs, unit: 'g', abbr: 'CHO' },
+        { label: 'Grasas', value: fats, unit: 'g', abbr: 'FAT' },
+    ];
 
     return (
-        <div className="min-h-screen p-4 md:p-12 bg-background relative font-[family-name:var(--font-space-grotesk)] text-foreground flex flex-col items-center">
-            <div className="fixed top-0 inset-x-0 h-1/2 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.04)_0%,rgba(0,0,0,0)_70%)] pointer-events-none" />
-            <div className="fixed bottom-0 left-0 w-1/3 h-1/3 bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="min-h-screen bg-white text-neutral-900 font-[family-name:var(--font-inter)]">
 
-            <div className="w-full max-w-7xl relative z-10">
-
-                {/* Nav */}
-                <header className="flex justify-between items-center border-b border-white/10 pb-6">
-                    <div className="flex items-center gap-4">
-                        <Diamond className="w-4 h-4 text-primary" strokeWidth={1.5} />
-                        <span className="font-[family-name:var(--font-anton)] text-xl tracking-[0.2em] uppercase">TEMPLO</span>
+            {/* Top Nav */}
+            <nav className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-neutral-100">
+                <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                        <span className="text-xs font-semibold tracking-[0.3em] uppercase text-neutral-800">TEMPLO OS</span>
+                        <span className="w-px h-4 bg-neutral-200" />
+                        <span
+                            className="text-[10px] font-medium uppercase tracking-[0.2em] px-2.5 py-1 rounded-full"
+                            style={{ color: theme.color, backgroundColor: theme.bg, border: `1px solid ${theme.border}` }}
+                        >
+                            {theme.label}
+                        </span>
                     </div>
-                    <button onClick={resetProfile} className="text-[9px] uppercase tracking-[0.3em] font-semibold text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
-                        Reiniciar <LogOut className="w-3 h-3" />
+                    <button
+                        onClick={resetProfile}
+                        className="text-[10px] uppercase tracking-[0.25em] text-neutral-400 hover:text-neutral-700 transition-colors font-medium"
+                    >
+                        Reiniciar Protocolo →
                     </button>
-                </header>
+                </div>
+            </nav>
 
-                {/* Hero Section */}
-                <section className="mt-20 mb-16 text-center">
-                    <div className="inline-flex items-center gap-2 border border-primary/20 bg-primary/5 px-4 py-1.5 rounded-full mb-8">
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                        <span className="text-[9px] uppercase tracking-[0.3em] font-semibold text-primary">Sincronización Viva // {chrono.state}</span>
-                    </div>
-                    <h1 className="text-5xl md:text-7xl lg:text-[7rem] leading-[0.85] font-[family-name:var(--font-anton)] uppercase tracking-wide text-white/90">
-                        Soberanía <br /><span className="text-white/30">Biológica</span>
-                    </h1>
-                    <p className="max-w-xl mx-auto text-sm opacity-70 mt-8 font-light leading-relaxed">
-                        {chrono.message}
+            <main className="max-w-7xl mx-auto px-6 py-16 space-y-24">
+
+                {/* Hero */}
+                <motion.section
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    className="text-center space-y-6 pt-8"
+                >
+                    <p className="text-[10px] uppercase tracking-[0.5em] text-neutral-400 font-medium">
+                        TEMPLO OS // Soberanía Biológica
                     </p>
-                </section>
+                    <h1 className="text-5xl md:text-7xl font-extralight text-neutral-900 leading-[0.9] tracking-tight">
+                        Reclama tu<br />
+                        <span style={{ color: theme.color }}>Soberanía</span><br />
+                        Biológica
+                    </h1>
+                    <p className="max-w-lg mx-auto text-sm font-light text-neutral-500 leading-relaxed">
+                        El manual de instrucciones del Creador, decodificado por IA.
+                    </p>
 
-                {/* Bio Snapshot Bar */}
-                <div className="flex flex-wrap gap-3 justify-center mb-20">
-                    {[
-                        { icon: <Flame className="w-3 h-3" />, label: `${BODY_TYPE_LABEL[profile.bodyType]}` },
-                        { icon: <Activity className="w-3 h-3" />, label: ACTIVITY_LABEL[profile.activityLevel] },
-                        { icon: <Moon className="w-3 h-3" />, label: `Sueño ${SLEEP_LABEL[profile.sleepQuality]}` },
-                        { icon: <Zap className="w-3 h-3" />, label: `Estrés ${profile.stressLevel}/10` },
-                        { icon: <Diamond className="w-3 h-3" />, label: (profile.location || 'México').split(',')[0] },
-                    ].map((item, i) => (
-                        <div key={i} className="flex items-center gap-2 border border-white/10 bg-card/20 px-4 py-2 rounded-full text-xs text-muted-foreground font-medium">
-                            <span className="text-primary">{item.icon}</span>
-                            {item.label}
+                    {/* Dream display */}
+                    {p.mainGoal && (
+                        <div className="max-w-xl mx-auto border border-neutral-100 rounded-2xl px-6 py-4 bg-neutral-50/50 mt-4">
+                            <p className="text-[9px] uppercase tracking-[0.3em] text-neutral-400 mb-2">Tu sueño del alma</p>
+                            <p className="text-sm font-light text-neutral-700 italic leading-relaxed">"{p.mainGoal}"</p>
                         </div>
-                    ))}
-                </div>
+                    )}
+                </motion.section>
 
-                {/* Main Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-
-                    {/* Protocolo de Combustible */}
-                    <div className="lg:col-span-5 space-y-8">
-                        <div className="flex justify-between items-end border-b border-white/10 pb-4">
-                            <h2 className="text-xs font-semibold uppercase tracking-[0.3em] flex items-center gap-3">
-                                <Activity className="w-4 h-4 text-primary" /> Protocolo de Combustible
-                            </h2>
-                            <span className="text-[10px] font-mono text-muted-foreground">{calories} KCAL</span>
+                {/* Mission Diagnosis */}
+                {proto?.missionReason && (
+                    <motion.section
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        <div
+                            className="rounded-3xl p-10 border"
+                            style={{ backgroundColor: theme.bg, borderColor: theme.border }}
+                        >
+                            <p
+                                className="text-[9px] uppercase tracking-[0.35em] font-semibold mb-4"
+                                style={{ color: theme.color }}
+                            >
+                                Diagnóstico TEMPLO OS
+                            </p>
+                            <p className="text-base font-light leading-relaxed text-neutral-700 max-w-3xl">
+                                {proto.missionReason}
+                            </p>
+                            {proto.biologicalContext && (
+                                <p className="text-xs font-light leading-relaxed text-neutral-500 max-w-3xl mt-4 pt-4 border-t border-neutral-200">
+                                    {proto.biologicalContext}
+                                </p>
+                            )}
                         </div>
+                    </motion.section>
+                )}
 
-                        <div className="grid grid-cols-3 gap-3">
-                            {[
-                                { label: 'PRT (g)', val: protein },
-                                { label: 'CRB (g)', val: carbs },
-                                { label: 'FAT (g)', val: fats },
-                            ].map(m => (
-                                <div key={m.label} className="bg-card/30 backdrop-blur-md border border-white/5 p-5 rounded-2xl flex flex-col items-center gap-2">
-                                    <p className="text-3xl font-[family-name:var(--font-anton)] text-white">{m.val}</p>
-                                    <p className="text-[9px] font-semibold uppercase tracking-widest text-primary">{m.label}</p>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Bio context cards */}
-                        <div className="bg-card/20 border border-white/5 rounded-2xl p-8 space-y-5">
-                            <div className="flex justify-between items-center mb-4">
-                                <span className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground font-semibold">Fundamentos</span>
-                                <span className="text-[9px] uppercase tracking-[0.2em] border border-primary/30 text-primary px-3 py-1 rounded-full">Lactose-Free</span>
-                            </div>
-                            <ul className="space-y-5 text-sm font-light opacity-90">
-                                <li className="flex gap-4">
-                                    <span className="text-primary font-[family-name:var(--font-anton)] text-lg shrink-0">I</span>
-                                    <span className="leading-relaxed">Alimentos en su estado original. Si el hombre lo procesó, es interferencia.</span>
-                                </li>
-                                <li className="flex gap-4">
-                                    <span className="text-primary font-[family-name:var(--font-anton)] text-lg shrink-0">II</span>
-                                    <span className="leading-relaxed">
-                                        {profile.bodyType === 'ectomorfo' && 'Ectomorfo: mayor densidad calórica y carbohidratos complejos para activar la síntesis muscular.'}
-                                        {profile.bodyType === 'mesomorfo' && 'Mesomorfo: equilibrio entre proteína de calidad y carbohidratos de bajo índice glucémico.'}
-                                        {profile.bodyType === 'endomorfo' && 'Endomorfo: menor carga de carbohidratos, mayor protocolo de grasas saludables y ayuno estratégico.'}
-                                    </span>
-                                </li>
-                                <li className="flex gap-4">
-                                    <span className="text-primary font-[family-name:var(--font-anton)] text-lg shrink-0">III</span>
-                                    <span className="leading-relaxed">
-                                        {profile.sleepQuality === 'buena' && 'Sueño óptimo detectado. Ventanas anabólicas al máximo.'}
-                                        {profile.sleepQuality === 'regular' && 'Sueño regular. Se prioriza proteína post-entrenamiento para compensar la recuperación.'}
-                                        {profile.sleepQuality === 'mala' && 'Sueño deficiente. Protocolo reforzado de proteína y reducción del estrés oxidativo.'}
-                                    </span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    {/* Optimización Mecánica */}
-                    <div className="lg:col-span-7 space-y-8">
-                        <div className="flex justify-between items-end border-b border-white/10 pb-4">
-                            <h2 className="text-xs font-semibold uppercase tracking-[0.3em] flex items-center gap-3">
-                                <Zap className="w-4 h-4 text-primary" /> Optimización Mecánica
-                            </h2>
-                            <span className="text-[10px] font-mono text-muted-foreground uppercase">
-                                MISIÓN: {profile.mission}
-                            </span>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {routine.map((dayPlan, idx) => (
-                                <div key={idx} className="group relative bg-card/10 border border-white/5 rounded-3xl p-7 hover:bg-card/30 hover:border-white/20 transition-all duration-500 overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-[40px] group-hover:bg-primary/15 transition-colors duration-700" />
-                                    <div className="flex items-baseline justify-between mb-6 relative z-10">
-                                        <span className="font-[family-name:var(--font-anton)] text-4xl text-white/20 group-hover:text-primary/60 transition-colors duration-500">
-                                            {dayPlan.day.replace('Día ', '0')}
-                                        </span>
-                                        <span className="text-[9px] uppercase tracking-[0.2em] font-semibold">{dayPlan.focus}</span>
-                                    </div>
-                                    <div className="space-y-3.5 relative z-10">
-                                        {dayPlan.exercises.map((ex, i) => (
-                                            <div key={i} className="flex justify-between items-start border-b border-white/5 pb-3 last:border-0 last:pb-0">
-                                                <div className="pr-4">
-                                                    <p className="text-sm font-medium uppercase tracking-wide text-white/90">{ex.name}</p>
-                                                    <p className="text-[10px] text-muted-foreground mt-1">{ex.notes}</p>
-                                                </div>
-                                                <span className="shrink-0 text-[9px] font-mono tracking-[0.2em] text-primary bg-primary/10 px-2 py-1 rounded-sm mt-0.5">
-                                                    {ex.sets}X{ex.reps}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                </div>
-
-                {/* Gemini AI Insights — only shown if available */}
-                {(profile.geminiMissionReason || profile.geminiInsights?.length || profile.geminiFirstAction) && (
-                    <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-                        {profile.geminiMissionReason && (
-                            <div className="lg:col-span-7 bg-card/10 border border-primary/10 rounded-3xl p-8">
-                                <div className="flex items-center gap-3 mb-5">
-                                    <Diamond className="w-4 h-4 text-primary" strokeWidth={1.5} />
-                                    <span className="text-[9px] uppercase tracking-[0.3em] font-semibold text-primary">Diagnóstico TEMPLO OS</span>
-                                </div>
-                                <p className="text-sm font-light leading-relaxed text-white/80">{profile.geminiMissionReason}</p>
-                            </div>
-                        )}
-
-                        {profile.geminiInsights && profile.geminiInsights.length > 0 && (
-                            <div className="lg:col-span-5 space-y-4">
-                                <div className="flex items-center gap-3 mb-5">
-                                    <Zap className="w-4 h-4 text-primary" strokeWidth={1.5} />
-                                    <span className="text-[9px] uppercase tracking-[0.3em] font-semibold text-primary">Insights Biológicos</span>
-                                </div>
-                                {profile.geminiInsights.map((insight, i) => (
-                                    <div key={i} className="flex gap-4 border-b border-white/5 pb-4 last:border-0 last:pb-0">
-                                        <span className="font-[family-name:var(--font-anton)] text-primary text-lg shrink-0">{i + 1}</span>
-                                        <p className="text-xs font-light leading-relaxed text-white/70">{insight}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {profile.geminiFirstAction && (
-                            <div className="lg:col-span-12 bg-primary/5 border border-primary/20 rounded-3xl p-8 flex items-start gap-6">
-                                <Flame className="w-6 h-6 text-primary shrink-0 mt-0.5" strokeWidth={1.5} />
-                                <div>
-                                    <p className="text-[9px] uppercase tracking-[0.3em] font-semibold text-primary mb-2">Tu Primera Acción — Mañana al Despertar</p>
-                                    <p className="text-sm font-light leading-relaxed text-white/90">{profile.geminiFirstAction}</p>
-                                </div>
-                            </div>
-                        )}
+                {/* Revelation Button */}
+                {proto?.wisdom && (
+                    <div className="max-w-md">
+                        <RevelacionWrapper wisdom={proto.wisdom} missionColor={theme.color} />
                     </div>
                 )}
 
-                <footer className="mt-32 pt-12 pb-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-[10px] uppercase tracking-[0.4em] text-muted-foreground gap-4">
-                    <span>TEMPLO // ORIGINAL DESIGN</span>
-                    <span>FUTURE HUMAN</span>
+                {/* Main Grid */}
+                <section className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+                    {/* LEFT — Combustible */}
+                    <div className="lg:col-span-5 space-y-10">
+
+                        {/* Section label */}
+                        <div className="border-b border-neutral-100 pb-4 flex justify-between items-end">
+                            <h2 className="text-[10px] uppercase tracking-[0.3em] text-neutral-400 font-semibold">
+                                Protocolo de Combustible
+                            </h2>
+                            <span className="font-mono text-xs text-neutral-500">{calories} kcal/día</span>
+                        </div>
+
+                        {/* Macros */}
+                        <motion.div
+                            variants={STAGGER.container}
+                            initial="initial"
+                            animate="animate"
+                            className="grid grid-cols-3 gap-3"
+                        >
+                            {macros.map((m) => (
+                                <motion.div
+                                    key={m.abbr}
+                                    variants={STAGGER.item}
+                                    className="border border-neutral-100 rounded-2xl p-5 text-center hover:border-neutral-200 hover:shadow-sm transition-all"
+                                >
+                                    <p className="text-2xl font-light text-neutral-900">{m.value}</p>
+                                    <p className="text-[8px] uppercase tracking-[0.2em] text-neutral-400 mt-1">{m.unit}</p>
+                                    <p
+                                        className="text-[8px] font-semibold mt-2 uppercase tracking-[0.15em]"
+                                        style={{ color: theme.color }}
+                                    >
+                                        {m.abbr}
+                                    </p>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+
+                        {/* Bio stats */}
+                        <div className="grid grid-cols-2 gap-3 text-xs">
+                            {[
+                                { label: 'Peso actual', value: `${p.weightKg} kg` },
+                                { label: 'Meta biológica', value: `${proto?.goalWeightKg ?? p.goalWeightKg} kg` },
+                                { label: 'Grasa corporal meta', value: `${proto?.targetBodyFatPercent ?? p.bodyFatPercentage}%` },
+                                { label: 'Actividad', value: ACTIVITY_LABEL[p.activityLevel] },
+                            ].map((stat) => (
+                                <div key={stat.label} className="border border-neutral-100 rounded-xl p-4">
+                                    <p className="text-[9px] text-neutral-400 uppercase tracking-[0.2em] font-medium">{stat.label}</p>
+                                    <p className="text-sm font-light text-neutral-800 mt-1">{stat.value}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Electrolytes */}
+                        <div className="border-t border-neutral-100 pt-8">
+                            <ElectrolytosWidget
+                                nutrientDensity={proto?.nutrientDensity}
+                                mission={p.mission}
+                            />
+                        </div>
+                    </div>
+
+                    {/* RIGHT — Movement & Chrono */}
+                    <div className="lg:col-span-7 space-y-10">
+
+                        {/* Chrono Timeline */}
+                        <div>
+                            <div className="border-b border-neutral-100 pb-4 mb-6">
+                                <h2 className="text-[10px] uppercase tracking-[0.3em] text-neutral-400 font-semibold">
+                                    Cronobiología en Vivo
+                                </h2>
+                            </div>
+                            <ChronoTimeline currentAction={proto?.chronoGuidance?.action} />
+                        </div>
+
+                        {/* Key Insights */}
+                        {proto?.keyInsights && proto.keyInsights.length > 0 && (
+                            <div>
+                                <div className="border-b border-neutral-100 pb-4 mb-6">
+                                    <h2 className="text-[10px] uppercase tracking-[0.3em] text-neutral-400 font-semibold">
+                                        Insights Biológicos
+                                    </h2>
+                                </div>
+                                <div className="space-y-4">
+                                    {proto.keyInsights.map((insight, i) => (
+                                        <motion.div
+                                            key={i}
+                                            initial={{ opacity: 0, x: 10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.1 + 0.3 }}
+                                            className="flex gap-5 border-b border-neutral-100 pb-4 last:border-0 last:pb-0"
+                                        >
+                                            <span
+                                                className="text-sm font-light shrink-0 w-5 text-right"
+                                                style={{ color: theme.color }}
+                                            >
+                                                {i + 1}
+                                            </span>
+                                            <p className="text-xs font-light leading-relaxed text-neutral-600">{insight}</p>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* First Action */}
+                        {proto?.firstAction && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5 }}
+                                className="border rounded-2xl p-6"
+                                style={{ borderColor: theme.border, backgroundColor: theme.bg }}
+                            >
+                                <p
+                                    className="text-[9px] uppercase tracking-[0.3em] font-semibold mb-3"
+                                    style={{ color: theme.color }}
+                                >
+                                    Tu Primera Acción — Mañana al Despertar
+                                </p>
+                                <p className="text-sm font-light text-neutral-700 leading-relaxed">{proto.firstAction}</p>
+                            </motion.div>
+                        )}
+                    </div>
+                </section>
+
+                {/* Optimización Mecánica — Biset Cards */}
+                <section>
+                    <div className="border-b border-neutral-100 pb-4 mb-10 flex justify-between items-end">
+                        <h2 className="text-[10px] uppercase tracking-[0.3em] text-neutral-400 font-semibold">
+                            Optimización Mecánica
+                        </h2>
+                        <span
+                            className="text-[9px] uppercase tracking-[0.2em] font-medium"
+                            style={{ color: theme.color }}
+                        >
+                            {theme.label}
+                        </span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {routine.map((dayPlan, idx) => (
+                            <BisetCard
+                                key={idx}
+                                day={dayPlan.day}
+                                focus={dayPlan.focus}
+                                exercises={dayPlan.exercises}
+                                missionColor={theme.color}
+                                index={idx}
+                            />
+                        ))}
+                    </div>
+                </section>
+
+                {/* La Trinidad de la Verdad */}
+                <section>
+                    <div className="border-b border-neutral-100 pb-4 mb-10">
+                        <h2 className="text-[10px] uppercase tracking-[0.3em] text-neutral-400 font-semibold">
+                            La Trinidad de la Verdad
+                        </h2>
+                        <p className="text-xs font-light text-neutral-500 mt-1">
+                            Cada ley, vista desde el diseño divino, la evidencia científica y el principio universal.
+                        </p>
+                    </div>
+                    <div className="space-y-6">
+                        {TEMPLO_LEYES.map((ley) => (
+                            <TrinidadVerdad key={ley.ley} {...ley} />
+                        ))}
+                    </div>
+                </section>
+
+                {/* Footer */}
+                <footer className="border-t border-neutral-100 pt-12 pb-8 flex flex-col md:flex-row justify-between items-center text-[9px] uppercase tracking-[0.4em] text-neutral-400 gap-4">
+                    <span>TEMPLO OS // Original Design</span>
+                    <span>Biología Divina · Tecnología Humana</span>
+                    <span>Future Human</span>
                 </footer>
-            </div>
+
+            </main>
         </div>
     );
 }

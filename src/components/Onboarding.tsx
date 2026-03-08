@@ -286,14 +286,24 @@ export function Onboarding() {
                         injuries: answers.injuries || 'ninguna',
                         mission: (geminiResult.mission as Mission) || 'lider',
                         mainGoal: answers.mainGoal || '',
-                        // Store Gemini extras for Dashboard display
-                        geminiInsights: geminiResult.keyInsights || [],
-                        geminiMissionReason: geminiResult.missionReason || '',
-                        geminiFirstAction: geminiResult.firstAction || '',
-                        geminiCalories: geminiResult.calories,
-                        geminiProtein: geminiResult.proteinGrams,
-                        geminiCarbs: geminiResult.carbsGrams,
-                        geminiFats: geminiResult.fatsGrams,
+                        geminiProtocol: {
+                            mission: geminiResult.mission || 'lider',
+                            missionLabel: geminiResult.missionLabel || '',
+                            missionReason: geminiResult.missionReason || '',
+                            biologicalContext: geminiResult.biologicalContext || '',
+                            targetBodyFatPercent: geminiResult.targetBodyFatPercent || 15,
+                            goalWeightKg: geminiResult.goalWeightKg || Number(answers.weightKg) || 70,
+                            calories: geminiResult.calories || 2000,
+                            proteinGrams: geminiResult.proteinGrams || 150,
+                            carbsGrams: geminiResult.carbsGrams || 200,
+                            fatsGrams: geminiResult.fatsGrams || 70,
+                            chronoGuidance: geminiResult.chronoGuidance || { phase: 'Festín', start: '12:00', end: '19:59', action: '', gradient: '' },
+                            nutrientDensity: geminiResult.nutrientDensity || { magnesiumMg: 350, potassiumMg: 4000, sodiumMg: 2000 },
+                            keyInsights: geminiResult.keyInsights || [],
+                            firstAction: geminiResult.firstAction || '',
+                            wisdom: geminiResult.wisdom,
+                        },
+
                     } as any);
                 }, 1500);
             }, thinkingLines.length * 800 + 200);
@@ -329,13 +339,12 @@ export function Onboarding() {
     const progress = ((currentStep) / STEPS.length) * 100;
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 md:p-12 bg-background relative overflow-hidden font-[family-name:var(--font-space-grotesk)] text-foreground">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.04)_0%,rgba(0,0,0,0)_65%)] pointer-events-none" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.025] pointer-events-none">
-                <Hexagon className="w-[150vh] h-[150vh] text-primary" strokeWidth={0.1} />
-            </div>
+        <div className="min-h-screen flex items-center justify-center p-6 md:p-16 bg-white relative overflow-hidden font-[family-name:var(--font-inter)] text-neutral-900">
+            {/* Subtle background texture */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(184,151,62,0.04)_0%,transparent_60%)] pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-neutral-100" />
 
-            <div className="w-full max-w-2xl relative z-10">
+            <div className="w-full max-w-xl relative z-10">
 
                 {/* BOOT PHASE */}
                 <AnimatePresence mode="wait">

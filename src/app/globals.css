@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -48,92 +48,61 @@
 }
 
 :root {
-  /* TEMPLO - Minimalist Luxury (Obsidian Black, Divine Gold, Crystal White) */
-  --background: oklch(0.15 0 0);
-  /* Obsidian Black */
-  --foreground: oklch(0.98 0 0);
-  /* Crystal White */
+  /* TEMPLO OS — White-Futurism Minimalista */
+  --background: #FFFFFF;
+  --foreground: #0A0A0A;
 
-  /* Glassmorphism bases */
-  --card: oklch(0.20 0 0 / 0.5);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.20 0 0 / 0.5);
-  --popover-foreground: oklch(0.98 0 0);
+  /* Cards: off-white with subtle warmth */
+  --card: #F8F7F5;
+  --card-foreground: #0A0A0A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0A0A0A;
 
-  /* Divine Gold */
-  --primary: oklch(0.75 0.12 85);
-  /* Sophisticated Gold */
-  --primary-foreground: oklch(0.15 0 0);
+  /* Primary: Platinum Gold — subtle, not flashy */
+  --primary: #B8973E;
+  --primary-foreground: #FFFFFF;
 
-  /* Subtle dark grey for secondary */
-  --secondary: oklch(0.25 0 0);
-  --secondary-foreground: oklch(0.90 0 0);
+  /* Secondary: Cool platinum gray */
+  --secondary: #F0EFED;
+  --secondary-foreground: #0A0A0A;
 
-  --muted: oklch(0.25 0 0);
-  --muted-foreground: oklch(0.70 0 0);
+  --muted: #F5F4F2;
+  --muted-foreground: #8A8A8A;
 
-  --accent: oklch(0.25 0 0);
-  --accent-foreground: oklch(0.98 0 0);
+  --accent: #F0EFED;
+  --accent-foreground: #0A0A0A;
 
-  --destructive: oklch(0.50 0.15 20);
+  --destructive: #D44A4A;
 
-  /* Thin golden/glass borders */
-  --border: oklch(0.35 0 0 / 0.3);
-  --input: oklch(0.35 0 0 / 0.3);
-  --ring: oklch(0.75 0.12 85);
+  /* Borders: barely-there lines */
+  --border: #E8E7E5;
+  --input: #F0EFED;
+  --ring: #B8973E;
 
-  --radius: 0.5rem;
-  /* Slight curve for glassmorphism */
+  --radius: 0.75rem;
 
-  --chart-1: oklch(0.75 0.12 85);
-  --chart-2: oklch(0.62 0.21 259);
-  --chart-3: oklch(0.54 0.24 262);
-  --chart-4: oklch(0.48 0.24 264);
-  --chart-5: oklch(0.42 0.19 265);
+  /* Mission accent colors */
+  --atleta: #F59E0B;
+  --explorador: #10B981;
+  --lider: #6366F1;
 
-  --sidebar: oklch(0.15 0 0);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.75 0.12 85);
-  --sidebar-primary-foreground: oklch(0.15 0 0);
-  --sidebar-accent: oklch(0.25 0 0);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.35 0 0 / 0.3);
-  --sidebar-ring: oklch(0.75 0.12 85);
-}
+  /* Electrolyte blue glacial */
+  --electro: #BAE6FD;
 
-.dark {
-  /* TEMPLO is inherently dark mode */
-  --background: oklch(0.15 0 0);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.20 0 0 / 0.5);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.20 0 0 / 0.5);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.75 0.12 85);
-  --primary-foreground: oklch(0.15 0 0);
-  --secondary: oklch(0.25 0 0);
-  --secondary-foreground: oklch(0.90 0 0);
-  --muted: oklch(0.25 0 0);
-  --muted-foreground: oklch(0.70 0 0);
-  --accent: oklch(0.25 0 0);
-  --accent-foreground: oklch(0.98 0 0);
-  --destructive: oklch(0.50 0.15 20);
-  --border: oklch(0.35 0 0 / 0.3);
-  --input: oklch(0.35 0 0 / 0.3);
-  --ring: oklch(0.75 0.12 85);
-  --chart-1: oklch(0.75 0.12 85);
-  --chart-2: oklch(0.62 0.21 259);
-  --chart-3: oklch(0.54 0.24 262);
-  --chart-4: oklch(0.48 0.24 264);
-  --chart-5: oklch(0.42 0.19 265);
-  --sidebar: oklch(0.15 0 0);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.75 0.12 85);
-  --sidebar-primary-foreground: oklch(0.15 0 0);
-  --sidebar-accent: oklch(0.25 0 0);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.35 0 0 / 0.3);
-  --sidebar-ring: oklch(0.75 0.12 85);
+  --chart-1: #B8973E;
+  --chart-2: #F59E0B;
+  --chart-3: #10B981;
+  --chart-4: #6366F1;
+  --chart-5: #8A8A8A;
+
+  --sidebar: #FAFAF8;
+  --sidebar-foreground: #0A0A0A;
+  --sidebar-primary: #B8973E;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F0EFED;
+  --sidebar-accent-foreground: #0A0A0A;
+  --sidebar-border: #E8E7E5;
+  --sidebar-ring: #B8973E;
 }
 
 @layer base {
@@ -142,10 +111,84 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-weight: 300;
+    letter-spacing: -0.01em;
   }
 
   html {
     @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+
+  /* Typography scale for ultra-light feel */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 200;
+    letter-spacing: -0.02em;
+  }
+
+  /* Smooth scrolling */
+  * {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Mission-specific color utilities */
+.mission-atleta {
+  --mission-color: #F59E0B;
+  --mission-bg: #FFFBEB;
+  --mission-border: #FDE68A;
+}
+
+.mission-explorador {
+  --mission-color: #10B981;
+  --mission-bg: #ECFDF5;
+  --mission-border: #6EE7B7;
+}
+
+.mission-lider {
+  --mission-color: #6366F1;
+  --mission-bg: #EEF2FF;
+  --mission-border: #C7D2FE;
+}
+
+/* Chrono phase gradients */
+.phase-movimiento {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+}
+
+.phase-festin {
+  background: linear-gradient(135deg, #D1FAE5 0%, #6EE7B7 100%);
+}
+
+.phase-reparacion {
+  background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%);
+}
+
+/* Glassmorphism for modals */
+.glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* Subtle card shadow */
+.card-templo {
+  background: #FFFFFF;
+  border: 1px solid #E8E7E5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+/* Electrolyte glow */
+.electro-glow {
+  box-shadow: 0 0 20px rgba(186, 230, 253, 0.4);
 }

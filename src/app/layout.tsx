@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
-import { Anton, Space_Grotesk } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const anton = Anton({
-  weight: "400",
-  variable: "--font-anton",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
+  weight: ["200", "300", "400", "500", "600"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Bio-Purpose | El Templo en Movimiento",
-  description: "Alineando tu biología con el propósito de tu alma mediante nutrición ancestral, cronobiología y diseño funcional.",
+  title: "TEMPLO OS — Soberanía Biológica",
+  description: "Reclama tu Soberanía Biológica. El manual de instrucciones del Creador, decodificado por IA.",
+  openGraph: {
+    title: "TEMPLO OS — Soberanía Biológica",
+    description: "El manual de instrucciones del Creador, decodificado por IA.",
+  },
 };
 
 export default function RootLayout({
@@ -24,10 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${anton.variable} ${spaceGrotesk.variable} antialiased font-sans`}
-      >
+    <html lang="es">
+      <body className={`${inter.variable} antialiased`}>
         {children}
       </body>
     </html>
