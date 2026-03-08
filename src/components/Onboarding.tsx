@@ -13,7 +13,7 @@ interface Step {
     id: keyof UserProfile | 'ready';
     question: string;
     subtitle?: string;
-    type: 'number' | 'text' | 'choice' | 'scale';
+    type: 'number' | 'text' | 'textarea' | 'choice' | 'scale';
     choices?: { value: string; label: string; desc?: string }[];
     placeholder?: string;
     unit?: string;
@@ -134,27 +134,11 @@ const STEPS: Step[] = [
         max: 250,
     },
     {
-        id: 'mission',
+        id: 'mainGoal',
         question: '¿Cuál es el sueño de tu alma?',
-        subtitle: 'El ADN de tu protocolo. Ajusta todos los macros, el entrenamiento y los ritmos.',
-        type: 'choice',
-        choices: [
-            {
-                value: 'explorador',
-                label: 'Explorador',
-                desc: 'Quiero resistencia, energía constante y adaptabilidad para vivir con libertad.',
-            },
-            {
-                value: 'atleta',
-                label: 'Atleta de Alto Rendimiento',
-                desc: 'Quiero fuerza, hipertrofia y recuperación elite para dominar el deporte.',
-            },
-            {
-                value: 'lider',
-                label: 'Líder Creativo',
-                desc: 'Quiero claridad mental, enfoque sostenido y neuro-protección para crear y dirigir.',
-            },
-        ],
+        subtitle: 'Dímelo con tus palabras. Sin límites. Puede ser correr una ultra, construir un negocio, ser un padre presente, viajar el mundo o ganar una competencia. Mientras más específico, mejor calibrado estará tu protocolo.',
+        type: 'textarea',
+        placeholder: 'Cuéntame tu sueño...',
     },
 ];
 
@@ -236,6 +220,21 @@ export function Onboarding() {
     const buildFinalProfile = () => {
         setPhase('finalizing');
 
+        // Smart keyword parser — infer mission from free-text dream
+        const dream = (answers.mainGoal || '').toLowerCase();
+        let inferredMission: Mission = 'lider';
+        const athleteKeywords = ['musculo', 'músculo', 'deporte', 'fuerza', 'atleta', 'competencia', 'gym', 'hipertrofia', 'crossfit', 'correr', 'maratón', 'marathon', 'natacion', 'futbol', 'basket', 'fisico', 'físico', 'cuerpo', 'marcado'];
+        const explorerKeywords = ['viajar', 'viaje', 'libertad', 'explorar', 'mundo', 'aventura', 'resistencia', 'energia', 'energía', 'mochila', 'nómada', 'nomada', 'tribu', 'naturaleza', 'ultra'];
+        const leaderKeywords = ['negocio', 'empresa', 'liderar', 'crear', 'creativo', 'enfoque', 'focus', 'cerebro', 'mente', 'startup', 'construir', 'familia', 'padre', 'madre', 'mentor', 'impacto', 'influencia'];
+
+        const athleteScore = athleteKeywords.filter(k => dream.includes(k)).length;
+        const explorerScore = explorerKeywords.filter(k => dream.includes(k)).length;
+        const leaderScore = leaderKeywords.filter(k => dream.includes(k)).length;
+
+        if (athleteScore >= explorerScore && athleteScore >= leaderScore && athleteScore > 0) inferredMission = 'atleta';
+        else if (explorerScore >= athleteScore && explorerScore >= leaderScore && explorerScore > 0) inferredMission = 'explorador';
+        else inferredMission = 'lider';
+
         const finalizingLines = [
             'Procesando identidad biológica...',
             `Tipo de cuerpo detectado: ${(answers.bodyType || 'mesomorfo').toUpperCase()}`,
@@ -243,8 +242,9 @@ export function Onboarding() {
             `Nivel de estrés ${answers.stressLevel}/10 registrado → ajustando proteína...`,
             `Sueño ${answers.sleepQuality} → compensando recuperación muscular...`,
             `Ubicación: ${answers.location || 'México'} → Cronobiología sincronizada`,
+            `Sueño del alma analizado → Protocolo "${inferredMission.toUpperCase()}" activado`,
             'Calculando Protocolo de Combustible...',
-            'Generando Óptimización Mecánica...',
+            'Generando Optimización Mecánica...',
             'Protocolo personalizado listo.',
         ];
 
@@ -269,7 +269,7 @@ export function Onboarding() {
                             location: loc,
                             timezone: tz,
                             injuries: answers.injuries || 'ninguna',
-                            mission: (answers.mission as Mission) || 'lider',
+                            mission: inferredMission,
                             mainGoal: answers.mainGoal || '',
                         });
                     }, 1000);
@@ -403,6 +403,26 @@ export function Onboarding() {
                                         <button onClick={handleTextConfirm} disabled={!textValue.trim()} className="group flex items-center gap-3 text-sm font-semibold uppercase tracking-widest disabled:opacity-40 hover:text-primary transition-colors">
                                             Confirmar <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                         </button>
+                                    </div>
+                                )}
+
+                                {/* TEXTAREA — free text dream field */}
+                                {step.type === 'textarea' && (
+                                    <div className="space-y-6">
+                                        <textarea
+                                            value={textValue}
+                                            onChange={e => setTextValue(e.target.value)}
+                                            placeholder={step.placeholder}
+                                            rows={5}
+                                            className="w-full bg-card/20 border border-white/10 rounded-2xl px-6 py-5 text-lg font-light text-white focus:outline-none focus:border-primary/50 placeholder:text-white/15 transition-colors resize-none leading-relaxed"
+                                            autoFocus
+                                        />
+                                        <button onClick={handleTextConfirm} disabled={!textValue.trim()} className="group flex items-center gap-3 text-sm font-semibold uppercase tracking-widest disabled:opacity-40 hover:text-primary transition-colors">
+                                            Activar Protocolo <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                        </button>
+                                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+                                            La IA analizará tus palabras para calibrar el protocolo ideal.
+                                        </p>
                                     </div>
                                 )}
 
