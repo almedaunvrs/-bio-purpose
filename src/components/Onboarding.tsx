@@ -22,10 +22,20 @@ interface Step {
 }
 
 const STEPS: Step[] = [
+    // ── 1. DREAM FIRST ─────────────────────────────────────────────────────────
+    {
+        id: 'mainGoal',
+        question: '¿Cuál es el sueño de tu alma?',
+        subtitle: 'No tienes que saber qué necesitas. Solo cuéntanos hacia dónde quieres ir. Un corredor olímpico tiene un protocolo diferente al de un padre presente o al de un emprendedor. Mientras más específico seas, más preciso será el resultado.',
+        type: 'textarea',
+        placeholder: 'Ej: Quiero correr una ultra maratón en la montaña, tener energía para mis hijos y llegar al 10% de grasa corporal sin sacrificar músculo...',
+    },
+
+    // ── 2. IDENTITY ──────────────────────────────────────────────────────────
     {
         id: 'biologicalSex',
-        question: 'Primero, ¿cuál es tu sexo biológico?',
-        subtitle: 'Determina tu metabolismo basal y requerimientos hormonales.',
+        question: 'Tu sexo biológico',
+        subtitle: 'Determina tu metabolismo basal, producción hormonal y requerimientos nutricionales.',
         type: 'choice',
         choices: [
             { value: 'masculino', label: 'Masculino' },
@@ -35,17 +45,19 @@ const STEPS: Step[] = [
     {
         id: 'age',
         question: 'Tu edad',
-        subtitle: 'Cada década de vida ajusta el protocolo de recuperación y hormonas.',
+        subtitle: 'Cada década de vida ajusta el protocolo de recuperación y hormonas anabólicas.',
         type: 'number',
         placeholder: 'Ej: 24',
         unit: 'años',
         min: 14,
         max: 90,
     },
+
+    // ── 3. BIOMETRICS ────────────────────────────────────────────────────────
     {
         id: 'heightCm',
         question: 'Tu estatura',
-        subtitle: 'Base para calcular tu masa muscular óptima y composición corporal.',
+        subtitle: 'Base para calcular tu masa muscular óptima y composición corporal ideal.',
         type: 'number',
         placeholder: 'Ej: 168',
         unit: 'cm',
@@ -55,7 +67,7 @@ const STEPS: Step[] = [
     {
         id: 'weightKg',
         question: 'Tu peso actual',
-        subtitle: 'Punto de partida para calibrar tu requerimiento calórico.',
+        subtitle: 'Punto de partida para calibrar tu requerimiento calórico exacto.',
         type: 'number',
         placeholder: 'Ej: 58',
         unit: 'kg',
@@ -63,35 +75,49 @@ const STEPS: Step[] = [
         max: 250,
     },
     {
+        id: 'goalWeightKg',
+        question: 'Tu meta de peso',
+        subtitle: 'Define si el protocolo irá en superávit (ganar masa) o déficit (perder grasa).',
+        type: 'number',
+        placeholder: 'Ej: 65',
+        unit: 'kg',
+        min: 30,
+        max: 250,
+    },
+
+    // ── 4. BODY TYPE ─────────────────────────────────────────────────────────
+    {
         id: 'bodyType',
         question: 'Tu tipo de cuerpo natural',
-        subtitle: 'Determina la velocidad de tu metabolismo y respuesta al entrenamiento.',
+        subtitle: 'La velocidad de tu metabolismo y cómo responde tu cuerpo al entrenamiento y la nutrición.',
         type: 'choice',
         choices: [
             {
                 value: 'ectomorfo',
                 label: 'Ectomorfo',
-                desc: 'Naturalmente delgado. Cuesta subir masa. Metabolismo rápido.',
+                desc: 'Naturalmente delgado. Me cuesta subir masa. Como mucho y no subo.',
             },
             {
                 value: 'mesomorfo',
                 label: 'Mesomorfo',
-                desc: 'Atlético natural. Subes músculo y bajas grasa con relativa facilidad.',
+                desc: 'Atlético natural. Subo músculo y bajo grasa con relativa facilidad.',
             },
             {
                 value: 'endomorfo',
                 label: 'Endomorfo',
-                desc: 'Tendencia a subir peso. Metabolismo más lento pero gran base de fuerza.',
+                desc: 'Subo peso con facilidad. Me cuesta bajar grasa. Tengo buena base de fuerza.',
             },
         ],
     },
+
+    // ── 5. LIFESTYLE ─────────────────────────────────────────────────────────
     {
         id: 'activityLevel',
-        question: 'Nivel de actividad física actual',
-        subtitle: 'Determina tu TDEE real y ajusta el superávit o déficit calórico preciso.',
+        question: 'Tu nivel de actividad física actual',
+        subtitle: 'El punto de partida real para calibrar cuánta energía necesitas cada día.',
         type: 'choice',
         choices: [
-            { value: 'sedentario', label: 'Sedentario', desc: 'Trabajo de escritorio, poco o nada de ejercicio.' },
+            { value: 'sedentario', label: 'Sedentario', desc: 'Trabajo de escritorio, poco o nada de ejercicio regular.' },
             { value: 'moderado', label: 'Moderado', desc: 'Ejercicio 1-3 veces/semana o trabajo activo suave.' },
             { value: 'activo', label: 'Activo', desc: 'Ejercicio 3-5 días/semana o trabajo físicamente exigente.' },
             { value: 'muy_activo', label: 'Muy Activo', desc: 'Entrenamiento diario intenso, deportista o trabajo de campo.' },
@@ -99,8 +125,8 @@ const STEPS: Step[] = [
     },
     {
         id: 'sleepQuality',
-        question: 'Calidad de tu sueño actual',
-        subtitle: 'El sueño controla cortisol, testosterona, GH y la regeneración muscular.',
+        question: 'Tu calidad de sueño actual',
+        subtitle: 'El sueño controla cortisol, testosterona, hormona de crecimiento y recuperación muscular.',
         type: 'choice',
         choices: [
             { value: 'mala', label: 'Mala', desc: 'Menos de 6h, interrupciones frecuentes o agotamiento diurno.' },
@@ -110,8 +136,8 @@ const STEPS: Step[] = [
     },
     {
         id: 'stressLevel',
-        question: 'Nivel de estrés crónico',
-        subtitle: 'El cortisol elevado inhibe la síntesis muscular y aumenta el almacenamiento de grasa.',
+        question: 'Tu nivel de estrés crónico',
+        subtitle: 'El cortisol elevado inhibe la síntesis muscular, aumenta el almacenamiento de grasa e impide el sueño reparador.',
         type: 'scale',
         min: 1,
         max: 10,
@@ -119,28 +145,12 @@ const STEPS: Step[] = [
     {
         id: 'location',
         question: 'Ciudad donde vives',
-        subtitle: 'Permite calibrar los ciclos de luz solar para el protocolo de Cronobiología.',
+        subtitle: 'Sincroniza tu protocolo de Cronobiología con tu ciclo solar local real.',
         type: 'text',
         placeholder: 'Ej: Monterrey, Madrid, Bogotá...',
     },
-    {
-        id: 'goalWeightKg',
-        question: 'Tu meta de peso corporal',
-        subtitle: 'Define si iremos en superávit (ganar masa) o déficit (perder grasa).',
-        type: 'number',
-        placeholder: 'Ej: 65',
-        unit: 'kg',
-        min: 30,
-        max: 250,
-    },
-    {
-        id: 'mainGoal',
-        question: '¿Cuál es el sueño de tu alma?',
-        subtitle: 'Dímelo con tus palabras. Sin límites. Puede ser correr una ultra, construir un negocio, ser un padre presente, viajar el mundo o ganar una competencia. Mientras más específico, mejor calibrado estará tu protocolo.',
-        type: 'textarea',
-        placeholder: 'Cuéntame tu sueño...',
-    },
 ];
+
 
 const BOOTING_MESSAGES = [
     'Iniciando TEMPLO OS...',
