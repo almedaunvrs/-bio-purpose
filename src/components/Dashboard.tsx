@@ -212,9 +212,98 @@ export function Dashboard() {
                             Diagnóstico TEMPLO OS — Por qué este protocolo es tuyo
                         </p>
                         <p className="text-sm font-light leading-relaxed text-neutral-700">{proto.missionReason}</p>
+                        {proto.biologicalContext && (
+                            <p className="text-xs font-light leading-relaxed text-neutral-500 mt-4 pt-4 border-t border-black/5">
+                                {proto.biologicalContext}
+                            </p>
+                        )}
+                    </div>
+                )}
+
+                {/* ── GAP NEUROMARKETING ── */}
+                {proto?.gapMessage && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="mt-6"
+                    >
+                        {/* Phase banner */}
+                        <div className={`flex items-center gap-3 mb-4`}>
+                            <span className={`text-[9px] font-bold uppercase tracking-[0.3em] px-3 py-1.5 rounded-full ${proto.gapPhase === 'CONSTRUCCIÓN ACTIVA'
+                                    ? 'bg-amber-100 text-amber-700'
+                                    : proto.gapPhase === 'DEFINICIÓN BIOLÓGICA'
+                                        ? 'bg-sky-100 text-sky-700'
+                                        : 'bg-emerald-100 text-emerald-700'
+                                }`}>
+                                {proto.gapPhase === 'CONSTRUCCIÓN ACTIVA' ? '🏗️' : proto.gapPhase === 'DEFINICIÓN BIOLÓGICA' ? '🔬' : '⚡'} FASE: {proto.gapPhase}
+                            </span>
+                        </div>
+
+                        {/* Gap visualization */}
+                        <div className="border border-neutral-100 rounded-3xl p-6 bg-neutral-50/80">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
+                                {/* Current weight */}
+                                <div className="text-center">
+                                    <p className="text-[9px] uppercase tracking-[0.25em] text-neutral-400 font-medium">Peso Actual</p>
+                                    <p className="text-3xl font-extralight text-neutral-600">{p.weightKg}<span className="text-sm ml-1">kg</span></p>
+                                </div>
+
+                                {/* Arrow + gap */}
+                                <div className="flex-1 flex flex-col items-center gap-1 min-w-[100px]">
+                                    <motion.div
+                                        initial={{ scaleX: 0 }}
+                                        animate={{ scaleX: 1 }}
+                                        transition={{ duration: 0.8, delay: 0.5 }}
+                                        className="w-full h-px origin-left"
+                                        style={{ backgroundColor: theme.color }}
+                                    />
+                                    <span className="text-[9px] uppercase tracking-wider font-semibold" style={{ color: theme.color }}>
+                                        {Math.abs((proto.goalWeightKg ?? p.goalWeightKg) - p.weightKg).toFixed(1)} kg
+                                    </span>
+                                    <span className="text-lg">→</span>
+                                </div>
+
+                                {/* Goal weight */}
+                                <div className="text-center">
+                                    <p className="text-[9px] uppercase tracking-[0.25em] text-neutral-400 font-medium">Meta de Poder</p>
+                                    <p className="text-3xl font-extralight" style={{ color: theme.color }}>
+                                        {proto.goalWeightKg ?? p.goalWeightKg}<span className="text-sm ml-1">kg</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <p className="text-sm font-light text-neutral-700 leading-relaxed">{proto.gapMessage}</p>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* ── PORTION PLAN ── */}
+                {proto?.portionPlan && (proto.portionPlan.proteinSource || proto.portionPlan.carbSource) && (
+                    <div className="mt-6">
+                        <p className="text-[9px] uppercase tracking-[0.35em] text-neutral-400 font-medium mb-4">
+                            🍽️ Porciones Exactas — Sin Ambigüedad
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {[
+                                { icon: '🥩', label: 'Proteína', value: proto.portionPlan.proteinSource },
+                                { icon: '🌾', label: 'Carbohidrato', value: proto.portionPlan.carbSource },
+                                { icon: '🥑', label: 'Grasa', value: proto.portionPlan.fatSource },
+                                { icon: '⚡', label: 'Pre-Entreno', value: proto.portionPlan.preWorkout },
+                                { icon: '🔄', label: 'Post-Entreno', value: proto.portionPlan.postWorkout },
+                            ].filter(x => x.value).map((item, i) => (
+                                <div key={i} className="border border-neutral-100 rounded-2xl p-4 bg-white">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-lg">{item.icon}</span>
+                                        <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-neutral-400">{item.label}</span>
+                                    </div>
+                                    <p className="text-xs font-light text-neutral-700 leading-relaxed">{item.value}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
             </Section>
+
 
             {/* ── SECTION 2 — Cronobiología ───────────────────────────────────────── */}
             <Section bg="gray" id="cronobiologia">

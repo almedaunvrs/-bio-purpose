@@ -297,12 +297,22 @@ export function Onboarding() {
                             proteinGrams: geminiResult.proteinGrams || 150,
                             carbsGrams: geminiResult.carbsGrams || 200,
                             fatsGrams: geminiResult.fatsGrams || 70,
+                            gapPhase: geminiResult.gapPhase || 'OPTIMIZACIÓN',
+                            gapMessage: geminiResult.gapMessage || '',
+                            portionPlan: geminiResult.portionPlan || {
+                                proteinSource: '',
+                                carbSource: '',
+                                fatSource: '',
+                                preWorkout: '',
+                                postWorkout: '',
+                            },
                             chronoGuidance: geminiResult.chronoGuidance || { phase: 'Festín', start: '12:00', end: '19:59', action: '', gradient: '' },
                             nutrientDensity: geminiResult.nutrientDensity || { magnesiumMg: 350, potassiumMg: 4000, sodiumMg: 2000 },
                             keyInsights: geminiResult.keyInsights || [],
                             firstAction: geminiResult.firstAction || '',
                             wisdom: geminiResult.wisdom,
                         },
+
 
                     } as any);
                 }, 1500);
@@ -409,8 +419,8 @@ export function Onboarding() {
                                                 key={c.value}
                                                 onClick={() => handleChoiceSelect(c.value)}
                                                 className={`group text-left p-5 border rounded-2xl transition-all duration-200 ${answers[step.id as keyof UserProfile] === c.value
-                                                        ? 'border-primary bg-primary/8 shadow-sm'
-                                                        : 'border-neutral-200 bg-white hover:border-neutral-300 hover:bg-neutral-50'
+                                                    ? 'border-primary bg-primary/8 shadow-sm'
+                                                    : 'border-neutral-200 bg-white hover:border-neutral-300 hover:bg-neutral-50'
                                                     }`}
                                             >
                                                 <div className="flex items-center justify-between">

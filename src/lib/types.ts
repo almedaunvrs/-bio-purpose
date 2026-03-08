@@ -55,6 +55,16 @@ export interface NutrientDensity {
   sodiumMg: number;
 }
 
+export type GapPhase = 'CONSTRUCCIÓN ACTIVA' | 'DEFINICIÓN BIOLÓGICA' | 'OPTIMIZACIÓN';
+
+export interface PortionPlan {
+  proteinSource: string;
+  carbSource: string;
+  fatSource: string;
+  preWorkout: string;
+  postWorkout: string;
+}
+
 // ─── Gemini AI Protocol ───────────────────────────────────────────────────────
 export interface GeminiProtocol {
   mission: Mission;
@@ -67,6 +77,9 @@ export interface GeminiProtocol {
   proteinGrams: number;
   carbsGrams: number;
   fatsGrams: number;
+  gapPhase: GapPhase;
+  gapMessage: string;
+  portionPlan: PortionPlan;
   chronoGuidance: ChronoGuidance;
   nutrientDensity: NutrientDensity;
   keyInsights: string[];
