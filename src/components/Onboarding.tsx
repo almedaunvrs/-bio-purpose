@@ -7,6 +7,45 @@ import { guessTimezone } from '@/lib/algorithms';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Hexagon, ArrowRight, ArrowLeft } from 'lucide-react';
 
+// ─── DNA Scanner Animation ─────────────────────────────────────────────────────
+const DNA_Animation = () => (
+    <div className="flex flex-col items-center justify-center space-y-8">
+        <motion.div
+            animate={{ rotateY: 360 }}
+            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+            className="w-16 h-48 flex flex-col justify-between relative"
+        >
+            {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="flex justify-between w-full h-1 my-1 opacity-80" style={{ perspective: '200px' }}>
+                    <motion.div
+                        className="w-3 h-3 rounded-full bg-blue-400 shadow-[0_0_15px_#60a5fa]"
+                        animate={{ x: [0, 40, 0], scale: [1, 0.5, 1], zIndex: [10, 0, 10] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: i * 0.15 }}
+                    />
+                    <motion.div
+                        className="w-3 h-3 rounded-full bg-white shadow-[0_0_15px_white]"
+                        animate={{ x: [0, -40, 0], scale: [0.5, 1, 0.5], zIndex: [0, 10, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: i * 0.15 }}
+                    />
+                    <motion.div
+                        className="absolute left-3 right-3 h-px bg-blue-200/30 top-1.5"
+                        animate={{ opacity: [0.2, 0.8, 0.2] }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear", delay: i * 0.15 }}
+                    />
+                </div>
+            ))}
+        </motion.div>
+        <div className="text-center space-y-2">
+            <p className="text-blue-400 animate-pulse text-[10px] font-bold uppercase tracking-[0.3em]">
+                Decodificando diseño original...
+            </p>
+            <p className="text-neutral-400 text-[9px] uppercase tracking-widest">
+                Alineando masa crítica con el sueño del alma
+            </p>
+        </div>
+    </div>
+);
+
 // ─── Question & Answer types ─────────────────────────────────────────────────
 
 interface Step {
@@ -22,122 +61,33 @@ interface Step {
 }
 
 const STEPS: Step[] = [
-    // ── 1. DREAM FIRST ─────────────────────────────────────────────────────────
+    // ── 1. EL LLAMADO ─────────────────────────────────────────────────────────
     {
         id: 'mainGoal',
-        question: '¿Cuál es el sueño de tu alma?',
-        subtitle: 'No tienes que saber qué necesitas. Solo cuéntanos hacia dónde quieres ir. Un corredor olímpico tiene un protocolo diferente al de un padre presente o al de un emprendedor. Mientras más específico seas, más preciso será el resultado.',
+        question: '¿Qué misión te ha encomendado el Creador?',
+        subtitle: 'El diseño de tu Templo dependerá de lo que necesitas construir o conquistar en esta tierra.',
         type: 'textarea',
-        placeholder: 'Ej: Quiero correr una ultra maratón en la montaña, tener energía para mis hijos y llegar al 10% de grasa corporal sin sacrificar músculo...',
+        placeholder: 'Ej: DJ Internacional y Empresario...',
     },
-
-    // ── 2. IDENTITY ──────────────────────────────────────────────────────────
+    // ── 2. EL DESGASTE ─────────────────────────────────────────────────────────
     {
-        id: 'biologicalSex',
-        question: 'Tu sexo biológico',
-        subtitle: 'Determina tu metabolismo basal, producción hormonal y requerimientos nutricionales.',
+        id: 'demands',
+        question: '¿Qué demandas reales tiene esta misión?',
+        subtitle: 'Para construir tu armadura, necesitamos conocer el impacto diario sobre tu biología.',
+        type: 'textarea',
+        placeholder: 'Ej: Viajes constantes, estrés, presentaciones, falta de sueño...',
+    },
+    // ── 3. EL PLAZO ──────────────────────────────────────────────────────────
+    {
+        id: 'timeframe',
+        question: '¿En cuánto tiempo quieres que tu Templo esté blindado?',
+        subtitle: 'La velocidad de la ingeniería biológica.',
         type: 'choice',
         choices: [
-            { value: 'masculino', label: 'Masculino' },
-            { value: 'femenino', label: 'Femenino' },
+            { value: '3 meses', label: '3 Meses', desc: 'Transformación acelerada y shock metabólico.' },
+            { value: '6 meses', label: '6 Meses', desc: 'Construcción sólida y sostenible (Recomendado).' },
+            { value: '12 meses', label: '12 Meses', desc: 'Reingeniería total y definitiva.' },
         ],
-    },
-    {
-        id: 'age',
-        question: 'Tu edad',
-        subtitle: 'Cada década de vida ajusta el protocolo de recuperación y hormonas anabólicas.',
-        type: 'number',
-        placeholder: 'Ej: 24',
-        unit: 'años',
-        min: 14,
-        max: 90,
-    },
-
-    // ── 3. BIOMETRICS ────────────────────────────────────────────────────────
-    {
-        id: 'heightCm',
-        question: 'Tu estatura',
-        subtitle: 'Base para calcular tu masa muscular óptima y composición corporal ideal.',
-        type: 'number',
-        placeholder: 'Ej: 168',
-        unit: 'cm',
-        min: 130,
-        max: 220,
-    },
-    {
-        id: 'weightKg',
-        question: 'Tu peso actual',
-        subtitle: 'Punto de partida para calibrar tu requerimiento calórico exacto.',
-        type: 'number',
-        placeholder: 'Ej: 58',
-        unit: 'kg',
-        min: 30,
-        max: 250,
-    },
-
-    // ── 4. BODY TYPE ─────────────────────────────────────────────────────────
-    {
-        id: 'bodyType',
-        question: 'Tu tipo de cuerpo natural',
-        subtitle: 'La velocidad de tu metabolismo y cómo responde tu cuerpo al entrenamiento y la nutrición.',
-        type: 'choice',
-        choices: [
-            {
-                value: 'ectomorfo',
-                label: 'Ectomorfo',
-                desc: 'Naturalmente delgado. Me cuesta subir masa. Como mucho y no subo.',
-            },
-            {
-                value: 'mesomorfo',
-                label: 'Mesomorfo',
-                desc: 'Atlético natural. Subo músculo y bajo grasa con relativa facilidad.',
-            },
-            {
-                value: 'endomorfo',
-                label: 'Endomorfo',
-                desc: 'Subo peso con facilidad. Me cuesta bajar grasa. Tengo buena base de fuerza.',
-            },
-        ],
-    },
-
-    // ── 5. LIFESTYLE ─────────────────────────────────────────────────────────
-    {
-        id: 'activityLevel',
-        question: 'Tu nivel de actividad física actual',
-        subtitle: 'El punto de partida real para calibrar cuánta energía necesitas cada día.',
-        type: 'choice',
-        choices: [
-            { value: 'sedentario', label: 'Sedentario', desc: 'Trabajo de escritorio, poco o nada de ejercicio regular.' },
-            { value: 'moderado', label: 'Moderado', desc: 'Ejercicio 1-3 veces/semana o trabajo activo suave.' },
-            { value: 'activo', label: 'Activo', desc: 'Ejercicio 3-5 días/semana o trabajo físicamente exigente.' },
-            { value: 'muy_activo', label: 'Muy Activo', desc: 'Entrenamiento diario intenso, deportista o trabajo de campo.' },
-        ],
-    },
-    {
-        id: 'sleepQuality',
-        question: 'Tu calidad de sueño actual',
-        subtitle: 'El sueño controla cortisol, testosterona, hormona de crecimiento y recuperación muscular.',
-        type: 'choice',
-        choices: [
-            { value: 'mala', label: 'Mala', desc: 'Menos de 6h, interrupciones frecuentes o agotamiento diurno.' },
-            { value: 'regular', label: 'Regular', desc: '6-7h, a veces cansado pero funcional.' },
-            { value: 'buena', label: 'Buena', desc: 'Duermo 7-9h y me levanto con energía consistente.' },
-        ],
-    },
-    {
-        id: 'stressLevel',
-        question: 'Tu nivel de estrés crónico',
-        subtitle: 'El cortisol elevado inhibe la síntesis muscular, aumenta el almacenamiento de grasa e impide el sueño reparador.',
-        type: 'scale',
-        min: 1,
-        max: 10,
-    },
-    {
-        id: 'location',
-        question: 'Ciudad donde vives',
-        subtitle: 'Sincroniza tu protocolo de Cronobiología con tu ciclo solar local real.',
-        type: 'text',
-        placeholder: 'Ej: Monterrey, Madrid, Bogotá...',
     },
 ];
 
@@ -176,8 +126,8 @@ function RestrictionGroup({ title, icon, subtitle, options, selected, onToggle, 
                         type="button"
                         onClick={() => onToggle(option)}
                         className={`text-xs px-3 py-1.5 rounded-full border transition-all duration-150 ${selected.includes(option)
-                                ? 'bg-red-500 text-white border-red-500'
-                                : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'
+                            ? 'bg-red-500 text-white border-red-500'
+                            : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'
                             }`}
                     >
                         {selected.includes(option) ? '✕ ' : ''}{option}
@@ -204,14 +154,25 @@ export function Onboarding() {
     const [finalLines, setFinalLines] = useState<string[]>([]);
 
     const [answers, setAnswers] = useState<Partial<UserProfile>>({
-        bodyFatPercentage: 15, // sane default
+        bodyFatPercentage: 15,
         injuries: 'ninguna',
         mainGoal: '',
+        demands: '',
+        timeframe: '6 meses',
+        biologicalSex: 'masculino', // Default fixes since they aren't asked anymore
+        age: 26,
+        heightCm: 168,
+        weightKg: 58,
+        bodyType: 'mesomorfo',
+        activityLevel: 'activo',
+        sleepQuality: 'regular',
+        stressLevel: 7,
+        location: 'México',
     });
 
     // Biological Restrictions (Interferencias)
     const [foodAllergies, setFoodAllergies] = useState<string[]>([]);
-    const [foodIntolerances, setFoodIntolerances] = useState<string[]>([]);
+    const [foodIntolerances, setFoodIntolerances] = useState<string[]>(['lactosa']); // pre-selected
     const [medicalConditions, setMedicalConditions] = useState<string[]>([]);
     const [restrictionsPhase, setRestrictionsPhase] = useState<'pending' | 'confirmed'>('pending');
 
@@ -297,15 +258,17 @@ export function Onboarding() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     mainGoal: answers.mainGoal || '',
-                    biologicalSex: answers.biologicalSex || 'masculino',
-                    age: Number(answers.age) || 25,
-                    heightCm: Number(answers.heightCm) || 170,
-                    weightKg: Number(answers.weightKg) || 70,
-                    bodyType: answers.bodyType || 'mesomorfo',
-                    activityLevel: answers.activityLevel || 'moderado',
-                    sleepQuality: answers.sleepQuality || 'regular',
-                    stressLevel: Number(answers.stressLevel) || 5,
-                    location: answers.location || 'México',
+                    demands: answers.demands || '',
+                    timeframe: answers.timeframe || '',
+                    biologicalSex: answers.biologicalSex,
+                    age: answers.age,
+                    heightCm: answers.heightCm,
+                    weightKg: answers.weightKg,
+                    bodyType: answers.bodyType,
+                    activityLevel: answers.activityLevel,
+                    sleepQuality: answers.sleepQuality,
+                    stressLevel: answers.stressLevel,
+                    location: answers.location,
                     foodAllergies,
                     foodIntolerances,
                     medicalConditions,
@@ -524,19 +487,23 @@ export function Onboarding() {
                         </motion.div>
                     )}
 
-                    {/* FINALIZING PHASE */}
+                    {/* FINALIZING PHASE - DNA Scanner */}
                     {phase === 'finalizing' && (
-                        <motion.div key="finalizing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 font-mono">
-                            <div className="flex items-center gap-4 mb-8">
-                                <Hexagon className="w-6 h-6 text-primary animate-[spin_2s_linear_infinite]" strokeWidth={1} />
-                                <span className="text-sm font-[family-name:var(--font-anton)] uppercase tracking-widest">Sintetizando tu Protocolo</span>
+                        <motion.div key="finalizing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center p-6 bg-white min-h-[50vh]">
+                            <DNA_Animation />
+
+                            <div className="w-full max-w-sm mt-16 space-y-3">
+                                {finalLines.map((line, i) => (
+                                    <motion.p
+                                        key={i}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="text-[10px] md:text-xs font-mono text-neutral-400 bg-neutral-50 px-3 py-2 rounded border border-neutral-100/50"
+                                    >
+                                        <span className="text-blue-400 mr-2 opacity-70">❯</span> {line}
+                                    </motion.p>
+                                ))}
                             </div>
-                            {finalLines.map((line, i) => (
-                                <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex items-start gap-3 text-xs md:text-sm">
-                                    <span className="text-primary mt-0.5">{'>'}</span>
-                                    <span className={i === finalLines.length - 1 ? 'text-white font-semibold' : 'text-muted-foreground'}>{line}</span>
-                                </motion.div>
-                            ))}
                         </motion.div>
                     )}
 

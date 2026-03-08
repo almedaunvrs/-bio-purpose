@@ -22,11 +22,11 @@ const MALE_HABITS: Record<Mission, Habit[]> = {
         { emoji: '❌', title: 'Elimina una queja de tu vocabulario hoy — reemplázala con acción', why: 'El espíritu guerrero habla en hechos, no en excusas' },
     ],
     lider: [
+        { emoji: '🏋️', title: 'Lleva una carga pesada por alguien hoy', why: 'El líder absorbe la presión para que otros puedan operar en paz' },
+        { emoji: '💡', title: 'Usa tu plataforma para dar un mensaje de luz', why: 'La influencia que Dios te dio no es para ti, es para alumbrar el camino a otros' },
         { emoji: '🦅', title: 'Lidera con el ejemplo', why: 'El liderazgo divino requiere firmeza de mente y ser el primero en la línea de fuego' },
+        { emoji: '🙏', title: 'Agradece por tu templo antes de consumir el primer alimento', why: 'El alimento es provisión divina; dar gracias ancla tu ego a la Fuente' },
         { emoji: '🛡️', title: 'Protege el tiempo de descanso de tu equipo o familia', why: 'El honor de un líder se mide por la paz que provee a los suyos' },
-        { emoji: '📈', title: 'Ayuda a un empleado o colaborador a crecer hoy', why: 'El líder que multiplica a otros se vuelve indispensable en el Reino' },
-        { emoji: '🛑', title: 'Detén una decisión impulsiva hoy. Duerme sobre ella antes de actuar', why: 'Los hombres de Dios actúan con discernimiento, no con urgencia del ego' },
-        { emoji: '🤲', title: 'Haz un gesto económico o de tiempo a alguien que no puede devolvértelo', why: 'El líder que da sin esperar recibe sin límite — ley universal de la siembra' },
     ],
     explorador: [
         { emoji: '🏋️', title: 'Busca una carga pesada que llevar por alguien más hoy', why: 'El explorador fuerte allana el camino para los que vienen detrás' },

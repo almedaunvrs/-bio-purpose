@@ -221,8 +221,13 @@ ${(medicalConditions as string[]).length > 0
 NINGÚN alimento de las listas anteriores puede aparecer en el plan. Sustituye con la alternativa biológica más cercana.
 ` : 'Sin interferencias declaradas (aplica Ley IV base: cero lactosa)';
 
+        const demands = body.demands || 'Ninguna especificada';
+        const timeframe = body.timeframe || '6 meses';
+
         const userPrompt = `
 SUEÑO DEL ALMA: "${mainGoal}"
+DEMANDAS: "${demands}"
+PLAZO REQUERIDO: ${timeframe}
 
 DATA BIOLÓGICOS ACTUALES:
 - Sexo: ${biologicalSex} | Edad: ${age} años
@@ -237,14 +242,11 @@ DATA BIOLÓGICOS ACTUALES:
 ${restrictionsBlock}
 
 CÁLCULO OBLIGATORIO ANTES DE RESPONDER:
-1. Clasifica el sueño en arquetipo de FUERZA o LONGEVIDAD.
-2. Si es FUERZA: goalWeightKg = (FFMI_objetivo × altura_m²) / (1 - targetBF)
-   - FFMI_objetivo: hombre=21, mujer=18 (atleta natural avanzado)
-   - targetBF: hombre=0.12 (12%), mujer=0.17 (17%)
-   - Para ${heightM.toFixed(2)}m y ${biologicalSex}: goalWeightKg mínimo = ${Math.round(21 * (Number(heightCm) / 100) * (Number(heightCm) / 100) / (1 - (biologicalSex === 'femenino' ? 0.17 : 0.12)))}kg
-   - Si el cálculo da ≤ peso actual (${weightKg}kg), sube FFMI_objetivo a 23.
-   - goalWeightKg NUNCA puede ser igual al peso actual en un arquetipo de fuerza.
-3. Muestra el cálculo en biologicalContext explicando el FFMI y por qué ese peso.
+1. Clasifica el sueño en arquetipo de FUERZA, RESISTENCIA, o LIDERAZGO/ESTRÉS.
+2. REGLA DE PLATA: Para misiones de alto desgaste (DJ, Liderazgo, Empresa) en hombres de ~1.68m pesando menos de 60kg, el peso actual es una vulnerabilidad biológica crítica para el estrés.
+3. El SISTEMA EXIGE QUE para estos perfiles la meta biológica inamovible sea de EXACTAMENTE 68 kg para generar un blindaje de masa magra (densidad). Fuerza goalWeightKg = 68.
+4. Si es otro arquetipo de FUERZA general calcula el FFMI y la masa.
+5. Muestra el cálculo y la Lógica del "Mandato de Masa" en biologicalContext.
 
 INSTRUCCIONES ESPECIALES:
 1. IMPACTO EN PORCIONES (CRÍTICO): Si el usuario pesa 58kg pero su meta son 68kg, todas las porciones (MACROS, calorías, gramos precisos de alimento) se calculan para el cuerpo de 68kg que va a ser. NUNCA calcules el plan para reparar los 58kg actuales.
@@ -276,22 +278,32 @@ Responde ÚNICAMENTE con el JSON.
         const parsed = JSON.parse(jsonStr.trim());
 
         // ── LOCAL FFMI SANITY OVERRIDE ──────────────────────────────────────────
-        // If AI returned goalWeightKg == currentWeight for a strength archetype, fix it.
-        const STRENGTH_KEYWORDS = ['atleta', 'fisicoculturista', 'culturista', 'culturismo', 'guerrero', 'deportista', 'musculo', 'músculo', 'hipertrofia', 'bodybuilder', 'fuerza', 'atleta'];
+        // If it's the specified high-stress/leadership profile
         const dreamLower = mainGoal.toLowerCase();
-        const isStrengthDream = STRENGTH_KEYWORDS.some(kw => dreamLower.includes(kw)) || parsed.mission === 'atleta';
+        const isDJProfile = dreamLower.includes('dj') || dreamLower.includes('empresario') || dreamLower.includes('lider');
         const currentWeight = Number(weightKg);
         const overrideHeightM = Number(heightCm) / 100;
-        const returnedGoal = Number(parsed.goalWeightKg) || currentWeight;
 
-        if (isStrengthDream && Math.abs(returnedGoal - currentWeight) <= 2) {
-            const targetBF = biologicalSex === 'femenino' ? 0.17 : 0.12;
-            const ffmiTarget = biologicalSex === 'femenino' ? 18 : 21;
-            const correctedGoal = Math.round((ffmiTarget * overrideHeightM * overrideHeightM) / (1 - targetBF));
-            parsed.goalWeightKg = Math.max(correctedGoal, currentWeight + 5);
+        if (isDJProfile && biologicalSex === 'masculino' && currentWeight < 62 && overrideHeightM >= 1.65 && overrideHeightM <= 1.70) {
+            parsed.goalWeightKg = 68;
             parsed.gapPhase = 'CONSTRUCCIÓN ACTIVA';
-            parsed.gapMessage = `Peso actual: ${currentWeight}kg → Meta de Poder: ${parsed.goalWeightKg}kg. Faltan ${parsed.goalWeightKg - currentWeight}kg de tejido contráctil por construir. Tu sueño lo exige. Tu biología lo permite.`;
-            console.log(`[TEMPLO] AI returned ${returnedGoal}kg for strength archetype. OVERRIDE to ${parsed.goalWeightKg}kg (FFMI ${ffmiTarget}).`);
+            parsed.gapMessage = `El mandato orgánico es claro: A tus ${currentWeight} kg tu motor no tiene armazón para resistir la misión de ${mainGoal}. Faltan ${68 - currentWeight} kg de pura densidad para llegar a la especificación técnica de 68 kg.`;
+            console.log(`[TEMPLO] DJ/Empresario profile detected. Forced override to 68kg.`);
+        } else {
+            // General strength fallback
+            const STRENGTH_KEYWORDS = ['atleta', 'fisicoculturista', 'culturista', 'culturismo', 'guerrero', 'deportista', 'musculo', 'músculo', 'hipertrofia', 'bodybuilder', 'fuerza'];
+            const isStrengthDream = STRENGTH_KEYWORDS.some(kw => dreamLower.includes(kw)) || parsed.mission === 'atleta';
+            const returnedGoal = Number(parsed.goalWeightKg) || currentWeight;
+
+            if (isStrengthDream && Math.abs(returnedGoal - currentWeight) <= 2) {
+                const targetBF = biologicalSex === 'femenino' ? 0.17 : 0.12;
+                const ffmiTarget = biologicalSex === 'femenino' ? 18 : 21;
+                const correctedGoal = Math.round((ffmiTarget * overrideHeightM * overrideHeightM) / (1 - targetBF));
+                parsed.goalWeightKg = Math.max(correctedGoal, currentWeight + 5);
+                parsed.gapPhase = 'CONSTRUCCIÓN ACTIVA';
+                parsed.gapMessage = `Peso actual: ${currentWeight}kg → Meta de Poder: ${parsed.goalWeightKg}kg. Faltan ${parsed.goalWeightKg - currentWeight}kg de tejido contráctil por construir. Tu sueño lo exige. Tu biología lo permite.`;
+                console.log(`[TEMPLO] AI returned ${returnedGoal}kg for strength archetype. OVERRIDE to ${parsed.goalWeightKg}kg (FFMI ${ffmiTarget}).`);
+            }
         }
 
         // ───────────────────────────────────────────────────────────────────────

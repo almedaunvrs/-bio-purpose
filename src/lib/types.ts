@@ -119,7 +119,9 @@ export interface UserProfile {
 
   // Goal
   mission: Mission;
-  mainGoal: string;
+  mainGoal: string; // "El Llamado"
+  demands: string;  // "El Desgaste"
+  timeframe: string; // "El Plazo"
 
   // Full Gemini AI protocol (set after AI analysis)
   geminiProtocol?: GeminiProtocol;

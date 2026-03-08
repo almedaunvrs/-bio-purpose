@@ -48,14 +48,14 @@ export function OracleSearch({ profile }: OracleSearchProps) {
     };
 
     return (
-        <div className="w-full max-w-2xl mx-auto rounded-3xl border border-neutral-100 bg-white shadow-sm overflow-hidden">
+        <div className="w-full max-w-2xl mx-auto rounded-3xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] overflow-hidden transition-all">
             {/* Search Top */}
-            <div className="p-6 border-b border-neutral-100">
+            <div className="p-6 border-b border-white/10">
                 <div className="flex items-center gap-3 mb-4">
-                    <span className="text-xl">👁️</span>
+                    <span className="text-xl drop-shadow-sm">👁️</span>
                     <div>
                         <h3 className="text-sm font-semibold text-neutral-800 tracking-wide">Oráculo de Razonamiento</h3>
-                        <p className="text-[10px] text-neutral-400">Pregunta el "¿Por qué?" de cualquier aspecto de tu protocolo</p>
+                        <p className="text-[10px] text-neutral-500 font-medium tracking-wide">Pregunta el "¿Por qué?" de cualquier aspecto de tu protocolo</p>
                     </div>
                 </div>
 
@@ -65,7 +65,7 @@ export function OracleSearch({ profile }: OracleSearchProps) {
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Ejemplo: ¿Por qué comer huevos? ¿Por qué la proteína?..."
-                        className="w-full bg-neutral-50 border border-neutral-200 text-neutral-800 text-sm rounded-2xl py-4 pl-5 pr-12 outline-none focus:bg-white focus:border-neutral-300 transition-all font-light placeholder:text-neutral-400 focus:ring-1"
+                        className="w-full bg-white/40 backdrop-blur-md border border-white/30 text-neutral-800 text-sm rounded-2xl py-4 pl-5 pr-12 outline-none focus:bg-white/60 focus:border-white/50 transition-all font-light placeholder:text-neutral-500 focus:ring-1 shadow-inner"
                         style={{ '--tw-ring-color': theme.color } as React.CSSProperties}
                         maxLength={100}
                     />
@@ -97,7 +97,7 @@ export function OracleSearch({ profile }: OracleSearchProps) {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="bg-neutral-50 px-6 py-6"
+                        className="bg-white/30 backdrop-blur-md px-6 py-6 border-t border-white/20"
                     >
                         <p className="text-[9px] uppercase tracking-[0.3em] font-semibold mb-4 text-center" style={{ color: theme.color }}>
                             La Trinidad de la Verdad

@@ -83,30 +83,28 @@ export function AnalisisOriginal() {
     // Build analysis points
     const analyses = [
         {
-            icon: '🔬',
-            title: 'Análisis de Diseño',
-            content: `Tu peso actual es ${currentWeight} kg. Para el sueño de ${p.mainGoal}, ${gapKg > 0 ? `este peso es una limitación biológica. Tu meta real de diseño son ${goalWeight} kg. Estamos en fase de ${gapPhase}.` : `este peso soporta la estructura. Tu meta de diseño es la optimización biológica a ${goalWeight} kg. Estamos en fase de ${gapPhase}.`}`
+            icon: '📜',
+            title: 'Análisis de Poder (El Decreto)',
+            content: `Para tu misión de ${p.mainGoal} con ${heightM.toFixed(2)}m, el diseño de Dios requiere una armadura de ${goalWeight} kg. A los ${currentWeight} kg tu motor es frágil para el desgaste y las demandas; a los ${goalWeight} kg serás una fortaleza. Estamos en fase de ${gapPhase}.`
         },
         {
             icon: '⚡',
-            title: 'La Necesidad de Masa',
+            title: 'El Mandato de Masa',
             content: proto?.gapMessage
                 ? proto.gapMessage
                 : `Peso actual: ${currentWeight}kg → Peso Crítico de Desempeño: ${goalWeight}kg. ${gapKg > 0 ? `La fuerza requiere masa; para levantar el mundo de tu sueño, necesitas un cimiento más pesado. Faltan ${gapKg}kg funcionales.` : 'El enfoque es composición corporal y rendimiento hormonal a partir de hoy.'}`,
         },
         {
+            icon: '👁️',
+            title: 'Eliminación de Vanidad',
+            content: 'Entiende esto: estos números son una especificación técnica impuesta por la naturaleza, no un objetivo estético superficial. No buscamos que te veas bien, buscamos que seas capaz de resistir tu llamado.',
+        },
+        {
             icon: '🧱',
-            title: 'Puntos de Mejora',
+            title: 'Puntos de Mejora Estructural',
             content: proto?.biologicalContext
                 ? proto.biologicalContext
                 : `1. Síntesis proteica: elevar a ${proto?.proteinGrams ?? 150}g/día. 2. Optimización hormonal: grasas saturadas naturales para base de testosterona/estrógenos. 3. Densidad mineral ósea (Mg-K-Na).`,
-        },
-        {
-            icon: '🗺️',
-            title: 'Aceptación de la Misión',
-            content: proto?.firstAction
-                ? `Protocolo de ${gapPhase}. ${gapKg !== 0 ? `Tu cuerpo TIENE que cambiar y evolucionar para poder alcanzar este sueño.` : `Tu protocolo de optimización te llevará a tu mejor estado biológico.`} Primera acción mañana: ${proto.firstAction}`
-                : `Tu cuerpo va a cambiar estructuralmente para alcanzar este sueño. Sigue el plan Lunes-Domingo. Cada alimento es un bloque de tu nuevo templo.`,
         },
     ];
 
@@ -216,7 +214,6 @@ export function AnalisisOriginal() {
                                 </div>
                             )}
 
-                            {/* Accept button */}
                             <motion.button
                                 initial={{ opacity: 0, y: 8 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -225,7 +222,7 @@ export function AnalisisOriginal() {
                                 className="w-full py-5 rounded-2xl font-semibold text-sm uppercase tracking-[0.25em] text-white transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
                                 style={{ backgroundColor: theme.color }}
                             >
-                                Entiendo y Acepto mi Transformación →
+                                Acepto mi proceso de construcción →
                             </motion.button>
 
                             <div className="text-center">
