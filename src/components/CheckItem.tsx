@@ -8,10 +8,10 @@ interface CheckItemProps {
     label: string;
     why: string;
     emoji?: string;
+    sessionKey?: string; // resets when this key changes (e.g. profile reset date)
     onCheck?: (checked: boolean) => void;
 }
 
-// Simple confetti burst (pure CSS, no external lib)
 function ConfettiBurst() {
     const colors = ['#F59E0B', '#10B981', '#6366F1', '#EF4444', '#B8973E'];
     return (
@@ -20,17 +20,12 @@ function ConfettiBurst() {
                 <motion.div
                     key={i}
                     className="absolute w-1.5 h-1.5 rounded-full"
-                    style={{
-                        backgroundColor: colors[i % colors.length],
-                        left: '50%',
-                        top: '50%',
-                    }}
+                    style={{ backgroundColor: colors[i % colors.length], left: '50%', top: '50%' }}
                     initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
                     animate={{
                         x: (Math.cos((i / 12) * Math.PI * 2) * 40) + 'px',
                         y: (Math.sin((i / 12) * Math.PI * 2) * 40) + 'px',
-                        opacity: 0,
-                        scale: 0,
+                        opacity: 0, scale: 0,
                     }}
                     transition={{ duration: 0.6, ease: 'easeOut' }}
                 />
@@ -39,25 +34,31 @@ function ConfettiBurst() {
     );
 }
 
-export function CheckItem({ id, label, why, emoji, onCheck }: CheckItemProps) {
+export function CheckItem({ id, label, why, emoji, sessionKey, onCheck }: CheckItemProps) {
     const [checked, setChecked] = useState(false);
     const [showBurst, setShowBurst] = useState(false);
 
-    // Persist to localStorage keyed by date + id
-    useEffect(() => {
-        const today = new Date().toISOString().split('T')[0];
-        const stored = localStorage.getItem(`templo-check-${today}-${id}`);
-        if (stored === 'true') setChecked(true);
-    }, [id]);
+    // Build the localStorage key — includes today's date so it auto-resets each day
+    // Also includes sessionKey so it resets when the user resets the profile
+    const today = new Date().toISOString().split('T')[0];
+    const storageKey = `templo-check-${today}-${sessionKey ?? ''}-${id}`;
 
-    const handleCheck = () => {
-        if (checked) return; // can't uncheck — only forward progress
-        const today = new Date().toISOString().split('T')[0];
-        localStorage.setItem(`templo-check-${today}-${id}`, 'true');
-        setChecked(true);
-        setShowBurst(true);
-        onCheck?.(true);
-        setTimeout(() => setShowBurst(false), 700);
+    useEffect(() => {
+        const stored = localStorage.getItem(storageKey);
+        setChecked(stored === 'true');
+    }, [storageKey]);
+
+    const handleToggle = () => {
+        const next = !checked;
+        if (next) {
+            localStorage.setItem(storageKey, 'true');
+            setShowBurst(true);
+            setTimeout(() => setShowBurst(false), 700);
+        } else {
+            localStorage.removeItem(storageKey);
+        }
+        setChecked(next);
+        onCheck?.(next);
     };
 
     return (
@@ -67,7 +68,7 @@ export function CheckItem({ id, label, why, emoji, onCheck }: CheckItemProps) {
                     ? 'border-emerald-200 bg-emerald-50/60'
                     : 'border-neutral-100 bg-white hover:border-neutral-200 hover:shadow-sm'
                 }`}
-            onClick={handleCheck}
+            onClick={handleToggle}
             whileTap={{ scale: 0.98 }}
         >
             {/* Checkbox */}
@@ -83,11 +84,9 @@ export function CheckItem({ id, label, why, emoji, onCheck }: CheckItemProps) {
                             <motion.svg
                                 initial={{ opacity: 0, scale: 0 }}
                                 animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0 }}
                                 className="w-3 h-3 text-white"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={3}
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}
                             >
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                             </motion.svg>
@@ -108,12 +107,10 @@ export function CheckItem({ id, label, why, emoji, onCheck }: CheckItemProps) {
                 <p className="text-[11px] text-neutral-400 font-light mt-1 leading-relaxed">{why}</p>
             </div>
 
-            {/* Completed badge */}
             <AnimatePresence>
                 {checked && (
                     <motion.span
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
                         className="text-[9px] font-semibold uppercase tracking-wider text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full self-start mt-0.5 flex-shrink-0"
                     >
                         ✓ Listo

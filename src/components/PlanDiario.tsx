@@ -16,72 +16,65 @@ const DAYS = [
     { key: 6, short: 'Dom', long: 'Domingo' },
 ];
 
-// Meal plans per day (7 days, cycles through variety)
+// EXACT QUANTITIES — specific portions for each meal every day
 const MEAL_TEMPLATES = [
-    // Lunes
+    // Lunes — Construcción de músculo
     [
-        { emoji: '🥚', name: 'Huevos revueltos con aguacate', why: 'Proteína completa para construir músculo desde el inicio' },
-        { emoji: '🥩', name: 'Carne de res (200g)', why: 'Hierro biodisponible para mantener energía todo el día' },
-        { emoji: '🍠', name: 'Batata al horno', why: 'Carbohidrato lento para energía sostenida sin picos' },
-        { emoji: '🥗', name: 'Ensalada verde con aceite de oliva', why: 'Grasas buenas protegen tu cerebro y corazón' },
+        { emoji: '🥚', name: '4 huevos enteros revueltos con ½ aguacate', why: 'Proteína completa + grasa para construir músculo desde el inicio del día' },
+        { emoji: '🥩', name: '200g carne de res (1 filete tamaño de tu palma) + 150g batata al horno', why: 'Hierro + carbohidrato lento = energía sostenida sin picos de insulina' },
+        { emoji: '🍗', name: '180g pechuga de pollo a la plancha + 1 taza brócoli al vapor', why: 'Leucina del pollo activa la síntesis proteica — el ladrillo del músculo' },
+        { emoji: '🥜', name: '30g nueces de macadamia + 2 huevos duros', why: 'Grasas omega-9 + proteína nocturna para reparar mientras duermes' },
     ],
-    // Martes
+    // Martes — Fuerza y pierna
     [
-        { emoji: '🍳', name: 'Omelette de espinacas y champiñones', why: 'Magnesio y B12 para activar tus "cables eléctricos"' },
-        { emoji: '🐟', name: 'Salmón a la plancha (200g)', why: 'Omega-3 — construye tu cerebro y reduce inflamación' },
-        { emoji: '🍚', name: 'Arroz blanco (150g cocido)', why: 'Recarga muscular rápida post-entrenamiento' },
-        { emoji: '🥑', name: 'Aguacate entero', why: 'Potasio para que tu corazón lata perfecto' },
+        { emoji: '🍳', name: '3 huevos enteros + 2 claras en omelette con espinacas (2 puños)', why: 'Colina del huevo: combustible cognitivo + hierro de la espinaca' },
+        { emoji: '🐟', name: '200g salmón a la plancha + 150g arroz blanco cocido (1 taza)', why: 'Omega-3 en salmón reduce inflamación post-entrenamiento de piernas' },
+        { emoji: '🥩', name: '180g bistec de res + ensalada verde con 1 cdta aceite de oliva', why: 'Zinc + creatina natural del bistec para recuperar la fuerza de piernas' },
+        { emoji: '🫐', name: '1 taza berries frescos + 30g almendras (1 puñado pequeño)', why: 'Antioxidantes reducen daño muscular — recuperación activa nocturna' },
     ],
-    // Miércoles (descanso — nutrición de reparación)
+    // Miércoles — Descanso y reparación
     [
-        { emoji: '🫐', name: 'Berries con nueces', why: 'Antioxidantes activan la limpieza automática celular' },
-        { emoji: '🍗', name: 'Pollo al horno (200g)', why: 'Proteína ligera — día de reparación muscular' },
-        { emoji: '🥦', name: 'Brócoli al vapor', why: 'Sulforafano: el vegetal que protege tu ADN' },
-        { emoji: '🫒', name: 'Aceite de oliva extra virgen', why: 'Activa genes anti-inflamatorios — medicina líquida' },
+        { emoji: '💧', name: 'Agua con ¼ cdta sal rosa + jugo de 1 limón (en ayunas, 400ml)', why: 'Electrolitos al despertar — enciende los cables eléctricos del cuerpo' },
+        { emoji: '🥚', name: '2 huevos enteros + 1 aguacate entero (desayuno tardío 12pm)', why: 'Ventana de ayuno hasta las 12h activa la limpieza automática celular' },
+        { emoji: '🍗', name: '150g pollo desmenuzado en caldo de huesos (2 tazas)', why: 'Colágeno + glutamina del caldo repara intestino y articulaciones' },
+        { emoji: '🥜', name: '30g nueces mixtas + 1 naranja pequeña', why: 'Vitamina C mejora absorción del hierro de las proteínas del día' },
     ],
-    // Jueves
+    // Jueves — Hombros, bíceps y tríceps
     [
-        { emoji: '🥚', name: '4 Claras + 2 Huevos enteros', why: 'Ratio ideal proteína/grasa para construir sin acumular' },
-        { emoji: '🥩', name: 'Bistec de res (180g)', why: 'Zinc y creatina natural para fuerza real' },
-        { emoji: '🫘', name: 'Lentejas (100g)', why: 'Fibra que alimenta a tu microbiota — los guardianes' },
-        { emoji: '🧅', name: 'Cebolla morada cruda', why: 'Quercetina: anti-inflamatoria más poderosa de la cocina' },
+        { emoji: '🥚', name: '5 claras + 2 huevos enteros revueltos + ½ aguacate', why: 'Ratio ideal proteína/grasa: máxima síntesis sin exceso calórico matutino' },
+        { emoji: '🥩', name: '200g carne molida de res (90% magra) + 120g arroz integral (⅔ taza cocida)', why: 'Creatina natural + carbohidrato complejo = fuerza sostenida en hombros' },
+        { emoji: '🐟', name: '180g atún en agua natural + 1 cdta aceite de oliva + ajo', why: 'Proteína limpia con omega-3 — sin interferencia hormonal del proceso' },
+        { emoji: '🫘', name: '100g lentejas cocidas (½ taza) + vegetales asados', why: 'Fibra prebiótica alimenta tu ejército intestinal para absorber mejor' },
     ],
-    // Viernes
+    // Viernes — Full Body y Core
     [
-        { emoji: '🐟', name: 'Atún en agua natural (150g)', why: 'Proteína limpia, rápida — sin interferencia hormonal' },
-        { emoji: '🍗', name: 'Muslos de pollo con piel', why: 'Grasa animal natural para absorber vitaminas liposolubles' },
-        { emoji: '🍠', name: 'Camote morado', why: 'Antocianinas: carbohidrato que también protege el cerebro' },
-        { emoji: '🥬', name: 'Espinacas frescas', why: 'Hierro + folato para oxigenar cada célula del cuerpo' },
+        { emoji: '🍳', name: '4 huevos enteros a cualquier estilo + 1 taza espinacas salteadas', why: 'Folato de espinacas + colina de huevo = máxima oxigenación cerebral' },
+        { emoji: '🍗', name: '200g muslos de pollo al horno (con piel) + 150g batata morada', why: 'Grasa animal natural absorbe vitaminas A, D, K — esenciales para hormonas' },
+        { emoji: '🥩', name: '160g salmón o atún + 1 aguacate pequeño en ensalada', why: 'Omega-3 + vitamina E del aguacate: recuperación anti-inflamatoria' },
+        { emoji: '🥬', name: '2 tazas espinacas frescas con limón + 2 huevos duros', why: 'Magnesio de espinacas + proteína = relajación muscular nocturna' },
     ],
-    // Sábado (festín social — estratégico)
+    // Sábado — Festín estratégico
     [
-        { emoji: '🥚', name: 'Huevos benedictinos (sin salsa procesada)', why: 'Colina del huevo: combustible cognitivo premium' },
-        { emoji: '🥩', name: 'Corte de res a las brasas', why: 'Disfruta. El ritual social es parte del protocolo TEMPLO' },
-        { emoji: '🍌', name: 'Plátano maduro', why: 'Potasio máximo + triptófano para serotonina natural' },
-        { emoji: '🫐', name: 'Mix de berries frescos', why: 'Refuerzo antioxidante post-semana de entrenamiento' },
+        { emoji: '🥚', name: '3 huevos enteros + vegetales a elección (desayuno tardío, sin presión)', why: 'Colina del huevo: combustible cognitivo premium sin necesidad de procesar' },
+        { emoji: '🥩', name: '250g corte de res a las brasas (cualquier corte que disfrutes)', why: 'El ritual social es parte del protocolo. Disfruta. El cuerpo registra la alegría.' },
+        { emoji: '🍌', name: '1 plátano maduro + 30g nueces de macadamia', why: 'Potasio + triptófano = serotonina natural. Tu cerebro necesita recargar.' },
+        { emoji: '🫐', name: '1 taza berries mezclados (fresas, arándanos, moras)', why: 'Refuerzo antioxidante post-semana. Limpieza sistémica de la fatiga acumulada.' },
     ],
-    // Domingo (ayuno + reparación)
+    // Domingo — Ayuno y preparación
     [
-        { emoji: '💧', name: 'Agua con sal rosa + limón (en ayunas)', why: 'Electrolitos al despertar — enciende los cables eléctricos' },
-        { emoji: '🍳', name: 'Desayuno tardío: huevos + aguacate (12pm)', why: 'Ventana de ayuno activa la limpieza automática celular' },
-        { emoji: '🍗', name: 'Caldo de huesos (2 tazas)', why: 'Colágeno biodisponible repara articulaciones y gut' },
-        { emoji: '🥜', name: 'Puño de nueces de macadamia', why: 'Grasa más similar a la leche materna — pura biología' },
+        { emoji: '💧', name: 'Agua con ½ cdta sal rosa + limón + pizca de pimienta cayena (ayunas)', why: 'Mineralización eléctrica máxima: Na-K-Mg al despertar sin gastar energía digestiva' },
+        { emoji: '🥚', name: '3 huevos enteros + ½ aguacate + sal de mar (primer alimento del día, 11-12am)', why: 'Ayuno de 16h activa autofagia profunda — limpieza automática celular real' },
+        { emoji: '🍗', name: '2 tazas caldo de huesos + 120g pollo desmenuzado', why: 'Colágeno tipo II repara cartílago y articulaciones para la semana siguiente' },
+        { emoji: '🥜', name: '40g nueces mixtas (1 puñado generoso) antes dormir', why: 'Melatonina natural de nueces + magnesio = sueño profundo reparador' },
     ],
 ];
 
-// 4 training days + 3 rest/recovery, mapped to 7-day week
 const DAY_TO_WORKOUT: Record<number, number | null> = {
-    0: 0, // Lun → Día 1
-    1: 1, // Mar → Día 2
-    2: null, // Mié → Descanso
-    3: 2, // Jue → Día 3
-    4: 3, // Vie → Día 4
-    5: null, // Sáb → Descanso activo
-    6: null, // Dom → Recuperación
+    0: 0, 1: 1, 2: null, 3: 2, 4: 3, 5: null, 6: null,
 };
 
 const REST_MESSAGES: Record<number, string> = {
-    2: '🧘 Día de recuperación activa. Camina 30 min, estira, hidratación máxima con electrolitos.',
+    2: '🧘 Día de recuperación activa. Camina 30 min, estira 15 min, hidratación máxima con electrolitos.',
     5: '☀️ Sábado activo. Actividad que disfrutes: nado, ciclismo, naturaleza. El descanso es entrenamiento.',
     6: '🌿 Domingo de reparación. Ayuno intermitente, caldo de huesos, movilidad suave. Tu cuerpo crece hoy.',
 };
@@ -90,15 +83,15 @@ interface PlanDiarioProps {
     profile: UserProfile;
     routine: DayRoutine[];
     nutrition: MacroSplit;
+    sessionKey?: string;
     onProgressChange?: (completed: number, total: number) => void;
 }
 
-export function PlanDiario({ profile, routine, nutrition, onProgressChange }: PlanDiarioProps) {
+export function PlanDiario({ profile, routine, nutrition, sessionKey, onProgressChange }: PlanDiarioProps) {
     const todayIdx = new Date().getDay();
-    // Convert Sunday=0 to Mon=0 index
     const todayKey = todayIdx === 0 ? 6 : todayIdx - 1;
     const [activeDay, setActiveDay] = useState(todayKey);
-    const [checkedCount, setCheckedCount] = useState(0);
+    const [completedCount, setCompletedCount] = useState<Record<string, boolean>>({});
 
     const theme = MISSION_THEMES[profile.mission];
     const meals = MEAL_TEMPLATES[activeDay];
@@ -106,13 +99,14 @@ export function PlanDiario({ profile, routine, nutrition, onProgressChange }: Pl
     const workoutDay = workoutIdx !== null ? routine[workoutIdx] : null;
     const restMessage = REST_MESSAGES[activeDay];
 
-    // Total items for this day
     const totalItems = meals.length + (workoutDay ? workoutDay.exercises.length : 0);
+    const completed = Object.values(completedCount).filter(Boolean).length;
 
-    const handleCheck = useCallback(() => {
-        setCheckedCount(prev => {
-            const next = prev + 1;
-            onProgressChange?.(next, totalItems);
+    const handleCheck = useCallback((itemKey: string, checked: boolean) => {
+        setCompletedCount(prev => {
+            const next = { ...prev, [itemKey]: checked };
+            const count = Object.values(next).filter(Boolean).length;
+            onProgressChange?.(count, totalItems);
             return next;
         });
     }, [totalItems, onProgressChange]);
@@ -126,26 +120,17 @@ export function PlanDiario({ profile, routine, nutrition, onProgressChange }: Pl
                         const isToday = day.key === todayKey;
                         const isActive = day.key === activeDay;
                         const hasTraining = DAY_TO_WORKOUT[day.key] !== null;
-
                         return (
                             <button
                                 key={day.key}
-                                onClick={() => { setActiveDay(day.key); setCheckedCount(0); }}
-                                className={`relative flex flex-col items-center gap-1 px-4 py-3 rounded-2xl text-center transition-all duration-200 min-w-[60px] ${isActive
-                                        ? 'text-white shadow-sm'
-                                        : 'bg-white border border-neutral-100 text-neutral-600 hover:border-neutral-200 hover:bg-neutral-50'
+                                onClick={() => { setActiveDay(day.key); setCompletedCount({}); }}
+                                className={`relative flex flex-col items-center gap-1 px-4 py-3 rounded-2xl text-center transition-all duration-200 min-w-[60px] ${isActive ? 'text-white shadow-sm' : 'bg-white border border-neutral-100 text-neutral-600 hover:border-neutral-200 hover:bg-neutral-50'
                                     }`}
                                 style={isActive ? { backgroundColor: theme.color } : {}}
                             >
                                 <span className="text-[10px] font-semibold uppercase tracking-wider">{day.short}</span>
-                                {/* Training/rest indicator */}
-                                <span className={`w-1.5 h-1.5 rounded-full ${isActive
-                                        ? 'bg-white/60'
-                                        : hasTraining ? 'bg-neutral-300' : 'bg-neutral-100'
-                                    }`} />
-                                {isToday && (
-                                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 border border-white" />
-                                )}
+                                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-white/60' : hasTraining ? 'bg-neutral-300' : 'bg-neutral-100'}`} />
+                                {isToday && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 border border-white" />}
                             </button>
                         );
                     })}
@@ -169,21 +154,25 @@ export function PlanDiario({ profile, routine, nutrition, onProgressChange }: Pl
                             <div>
                                 <h3 className="text-sm font-semibold text-neutral-800">Qué Comer</h3>
                                 <p className="text-[10px] text-neutral-400">
-                                    {Math.round(nutrition.calories / 3)} kcal por comida · Un solo ingrediente
+                                    {Math.round(nutrition.calories / 3)} kcal por comida · Porciones exactas
                                 </p>
                             </div>
                         </div>
                         <div className="space-y-3">
-                            {meals.map((meal, i) => (
-                                <CheckItem
-                                    key={`${activeDay}-meal-${i}`}
-                                    id={`day${activeDay}-meal${i}`}
-                                    label={meal.name}
-                                    why={meal.why}
-                                    emoji={meal.emoji}
-                                    onCheck={handleCheck}
-                                />
-                            ))}
+                            {meals.map((meal, i) => {
+                                const itemKey = `day${activeDay}-meal${i}`;
+                                return (
+                                    <CheckItem
+                                        key={itemKey}
+                                        id={itemKey}
+                                        label={meal.name}
+                                        why={meal.why}
+                                        emoji={meal.emoji}
+                                        sessionKey={sessionKey}
+                                        onCheck={(c) => handleCheck(itemKey, c)}
+                                    />
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -204,8 +193,8 @@ export function PlanDiario({ profile, routine, nutrition, onProgressChange }: Pl
                         {workoutDay ? (
                             <div className="space-y-2">
                                 {workoutDay.exercises.map((ex, i) => {
-                                    const isBisetFirst = ex.name.startsWith('A1') || ex.name.startsWith('B1');
                                     const isBisetSecond = ex.name.startsWith('A2') || ex.name.startsWith('B2');
+                                    const itemKey = `day${activeDay}-ex${i}`;
                                     return (
                                         <div key={i} className="relative">
                                             {isBisetSecond && (
@@ -218,11 +207,12 @@ export function PlanDiario({ profile, routine, nutrition, onProgressChange }: Pl
                                                 </div>
                                             )}
                                             <CheckItem
-                                                id={`day${activeDay}-ex${i}`}
-                                                label={`${ex.name} — ${ex.sets}×${ex.reps}`}
+                                                id={itemKey}
+                                                label={`${ex.name} — ${ex.sets} series × ${ex.reps} reps`}
                                                 why={ex.notes || 'Activa músculos antagonistas para máxima eficiencia'}
                                                 emoji="🏋️"
-                                                onCheck={handleCheck}
+                                                sessionKey={sessionKey}
+                                                onCheck={(c) => handleCheck(itemKey, c)}
                                             />
                                         </div>
                                     );

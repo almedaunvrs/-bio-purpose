@@ -12,6 +12,7 @@ import { ElectrolytosWidget } from './ElectrolytosWidget';
 import { RevelacionWrapper } from './RevelacionWrapper';
 import { PlanDiario } from './PlanDiario';
 import { DailyProgress } from './DailyProgress';
+import { HabitosAlma } from './HabitosAlma';
 
 // ─── Age-aware language ───────────────────────────────────────────────────────
 function getTone(age: number) {
@@ -123,6 +124,9 @@ export function Dashboard() {
     const carbs = proto?.carbsGrams ?? nutrition.carbsGrams;
     const fats = proto?.fatsGrams ?? nutrition.fatsGrams;
 
+    // Stable session key — changes only when profile is reset
+    const sessionKey = `${p.age}-${p.weightKg}-${p.heightCm}`;
+
     const handleProgressChange = useCallback((completed: number, total: number) => {
         setProgressCompleted(completed);
         setProgressTotal(total);
@@ -231,10 +235,10 @@ export function Dashboard() {
                         {/* Phase banner */}
                         <div className={`flex items-center gap-3 mb-4`}>
                             <span className={`text-[9px] font-bold uppercase tracking-[0.3em] px-3 py-1.5 rounded-full ${proto.gapPhase === 'CONSTRUCCIÓN ACTIVA'
-                                    ? 'bg-amber-100 text-amber-700'
-                                    : proto.gapPhase === 'DEFINICIÓN BIOLÓGICA'
-                                        ? 'bg-sky-100 text-sky-700'
-                                        : 'bg-emerald-100 text-emerald-700'
+                                ? 'bg-amber-100 text-amber-700'
+                                : proto.gapPhase === 'DEFINICIÓN BIOLÓGICA'
+                                    ? 'bg-sky-100 text-sky-700'
+                                    : 'bg-emerald-100 text-emerald-700'
                                 }`}>
                                 {proto.gapPhase === 'CONSTRUCCIÓN ACTIVA' ? '🏗️' : proto.gapPhase === 'DEFINICIÓN BIOLÓGICA' ? '🔬' : '⚡'} FASE: {proto.gapPhase}
                             </span>
@@ -351,6 +355,7 @@ export function Dashboard() {
                     profile={p}
                     routine={routine}
                     nutrition={nutrition}
+                    sessionKey={sessionKey}
                     onProgressChange={handleProgressChange}
                 />
             </Section>
@@ -425,6 +430,15 @@ export function Dashboard() {
                         <RevelacionWrapper wisdom={proto.wisdom} missionColor={theme.color} />
                     </div>
                 )}
+            </Section>
+
+            {/* ── SECTION 6 — Hábitos del Alma ────────────────────────────────── */}
+            <Section bg="gray" id="habitos">
+                <HabitosAlma
+                    mission={p.mission}
+                    biologicalSex={p.biologicalSex}
+                    sessionKey={sessionKey}
+                />
             </Section>
 
             {/* ── Footer ─────────────────────────────────────────────────────────── */}
