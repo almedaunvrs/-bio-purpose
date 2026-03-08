@@ -247,12 +247,13 @@ CÁLCULO OBLIGATORIO ANTES DE RESPONDER:
 3. Muestra el cálculo en biologicalContext explicando el FFMI y por qué ese peso.
 
 INSTRUCCIONES ESPECIALES:
-1. Aplica PRIMERO las reglas de interferencias bio-individuales antes de cualquier cálculo.
-2. Confirma el cálculo numérico de goalWeightKg usando FFMI antes de escribir el JSON.
-3. Detecta si el sueño es híbrido (múltiples arquetipos) y fusiona las necesidades.
-4. Calcula porciones EXACTAS en gramos con traducciones visuales.
-5. Genera el gapMessage con dopamina (peso actual → meta + timeline).
-6. Si hubo sustituciones por restricciones, explica en safetyNote de manera positiva y empoderada.
+1. IMPACTO EN PORCIONES (CRÍTICO): Si el usuario pesa 58kg pero su meta son 68kg, todas las porciones (MACROS, calorías, gramos precisos de alimento) se calculan para el cuerpo de 68kg que va a ser. NUNCA calcules el plan para reparar los 58kg actuales.
+2. Aplica PRIMERO las reglas de interferencias bio-individuales antes de cualquier cálculo.
+3. Confirma el cálculo numérico de goalWeightKg usando FFMI antes de escribir el JSON.
+4. Detecta si el sueño es híbrido (múltiples arquetipos) y fusiona las necesidades.
+5. Calcula porciones EXACTAS en gramos con traducciones visuales.
+6. Genera el gapMessage con dopamina (peso actual → meta + timeline).
+7. Si hubo sustituciones por restricciones, explica en safetyNote de manera positiva y empoderada.
 
 Responde ÚNICAMENTE con el JSON.
 `;

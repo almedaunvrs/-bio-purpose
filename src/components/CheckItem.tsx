@@ -65,8 +65,8 @@ export function CheckItem({ id, label, why, emoji, sessionKey, onCheck }: CheckI
         <motion.div
             layout
             className={`relative flex items-start gap-4 p-4 rounded-2xl border transition-all duration-300 cursor-pointer group ${checked
-                    ? 'border-emerald-200 bg-emerald-50/60'
-                    : 'border-neutral-100 bg-white hover:border-neutral-200 hover:shadow-sm'
+                ? 'border-emerald-200 bg-emerald-50/60'
+                : 'border-neutral-100 bg-white hover:border-neutral-200 hover:shadow-sm'
                 }`}
             onClick={handleToggle}
             whileTap={{ scale: 0.98 }}
@@ -109,12 +109,17 @@ export function CheckItem({ id, label, why, emoji, sessionKey, onCheck }: CheckI
 
             <AnimatePresence>
                 {checked && (
-                    <motion.span
+                    <motion.div
                         initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
-                        className="text-[9px] font-semibold uppercase tracking-wider text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full self-start mt-0.5 flex-shrink-0"
+                        className="flex flex-col items-end gap-1 mt-0.5 flex-shrink-0"
                     >
-                        ✓ Listo
-                    </motion.span>
+                        <span className="text-[9px] font-semibold uppercase tracking-wider text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full self-end">
+                            ✓ Listo
+                        </span>
+                        <span className="text-[8px] italic text-emerald-600/70 mr-1 max-w-[80px] text-right leading-tight">
+                            Has cumplido con tu diseño hoy.
+                        </span>
+                    </motion.div>
                 )}
             </AnimatePresence>
         </motion.div>

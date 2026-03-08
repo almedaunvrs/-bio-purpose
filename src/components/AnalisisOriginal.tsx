@@ -84,10 +84,8 @@ export function AnalisisOriginal() {
     const analyses = [
         {
             icon: '🔬',
-            title: 'Diagnóstico del Vehículo',
-            content: proto?.missionReason
-                ? proto.missionReason
-                : `Con ${currentWeight}kg y ${p.heightCm}cm, tu FFMI actual es ${((currentWeight * 0.82) / (heightM * heightM)).toFixed(1)}. Comparación honesta: ${gapKg > 0 ? `Para tu sueño necesitas construir ${gapKg}kg adicionales de tejido contráctil.` : 'Tu peso actual soporta el sueño, el trabajo es de optimización de composición.'}`,
+            title: 'Análisis de Diseño',
+            content: `Tu peso actual es ${currentWeight} kg. Para el sueño de ${p.mainGoal}, ${gapKg > 0 ? `este peso es una limitación biológica. Tu meta real de diseño son ${goalWeight} kg. Estamos en fase de ${gapPhase}.` : `este peso soporta la estructura. Tu meta de diseño es la optimización biológica a ${goalWeight} kg. Estamos en fase de ${gapPhase}.`}`
         },
         {
             icon: '⚡',

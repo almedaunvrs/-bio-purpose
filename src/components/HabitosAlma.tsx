@@ -15,16 +15,16 @@ interface Habit {
 // Habits for men by mission
 const MALE_HABITS: Record<Mission, Habit[]> = {
     atleta: [
-        { emoji: '💪', title: 'Motiva a alguien que empieza en el templo hoy', why: 'El verdadero atleta de Dios no solo levanta peso, levanta a otros' },
-        { emoji: '🏋️', title: 'Busca una carga pesada que llevar por alguien más hoy', why: 'La fuerza que construyes es para servir y proteger, no solo para ser visto' },
+        { emoji: '🦅', title: 'Lidera con el ejemplo', why: 'El verdadero atleta de Dios no solo levanta peso, eleva el estándar de los demás' },
+        { emoji: '🛡️', title: 'Protege el tiempo de descanso de tu equipo o familia', why: 'La fuerza que construyes es para servir y proteger, no solo para ser visto' },
         { emoji: '🙏', title: 'Oración de gratitud al despertar (5 min antes de levantarte)', why: 'El atleta que agradece primero tiene más claridad y menos ego en la competencia' },
         { emoji: '📞', title: 'Llama a tu padre, mentor o figura que te formó', why: 'Los hombres que honran a sus padres reciben sabiduría de generaciones' },
         { emoji: '❌', title: 'Elimina una queja de tu vocabulario hoy — reemplázala con acción', why: 'El espíritu guerrero habla en hechos, no en excusas' },
     ],
     lider: [
-        { emoji: '🗺️', title: 'Da una instrucción clara y con amor a alguien que guíes', why: 'El liderazgo divino requiere firmeza de mente y suavidad de corazón' },
+        { emoji: '🦅', title: 'Lidera con el ejemplo', why: 'El liderazgo divino requiere firmeza de mente y ser el primero en la línea de fuego' },
+        { emoji: '🛡️', title: 'Protege el tiempo de descanso de tu equipo o familia', why: 'El honor de un líder se mide por la paz que provee a los suyos' },
         { emoji: '📈', title: 'Ayuda a un empleado o colaborador a crecer hoy', why: 'El líder que multiplica a otros se vuelve indispensable en el Reino' },
-        { emoji: '🏋️', title: 'Busca una carga pesada que llevar por alguien más hoy', why: 'El honor de un líder se mide por el peso que le quita a los suyos' },
         { emoji: '🛑', title: 'Detén una decisión impulsiva hoy. Duerme sobre ella antes de actuar', why: 'Los hombres de Dios actúan con discernimiento, no con urgencia del ego' },
         { emoji: '🤲', title: 'Haz un gesto económico o de tiempo a alguien que no puede devolvértelo', why: 'El líder que da sin esperar recibe sin límite — ley universal de la siembra' },
     ],
@@ -40,16 +40,16 @@ const MALE_HABITS: Record<Mission, Habit[]> = {
 // Habits for women by mission
 const FEMALE_HABITS: Record<Mission, Habit[]> = {
     atleta: [
-        { emoji: '💪', title: 'Motiva a alguien que empieza en el templo hoy', why: 'La fuerza femenina que inspira cambia generaciones enteras' },
+        { emoji: '🕊️', title: 'Nutre la paz en tu entorno', why: 'La mujer sabia transforma el caos en paz con solo su presencia' },
+        { emoji: '💬', title: 'Edifica con tus palabras a alguien que duda', why: 'La fuerza femenina que inspira cambia generaciones enteras' },
         { emoji: '👂', title: 'Escucha con el alma a alguien que sufre', why: 'Tu capacidad de nutrir emocionalmente es tu fuerza más poderosa' },
-        { emoji: '🌸', title: 'Embellece tu entorno con un acto de orden y armonía', why: 'La mujer sabia transforma el caos en paz con solo su presencia' },
         { emoji: '💕', title: 'Anima a otra mujer de tu entorno hoy — sin comparación', why: 'Las mujeres fuertes elevan a las demás. El miedo compite, el amor construye.' },
         { emoji: '📖', title: 'Lee o escucha algo que nutra tu espíritu (no las redes)', why: 'La atleta de Dios se nutre por dentro para poder dar por fuera' },
     ],
     lider: [
-        { emoji: '👂', title: 'Escucha con el alma a alguien que sufre', why: 'La líder que sabe sanar corazones tiene lealtad eterna de su gente' },
+        { emoji: '🕊️', title: 'Nutre la paz en tu entorno', why: 'El diseño divino de la mujer trae belleza a los lugares más fríos' },
+        { emoji: '💬', title: 'Edifica con tus palabras a alguien que duda', why: 'La líder que edifica corazones tiene lealtad eterna de su gente' },
         { emoji: '📈', title: 'Ayuda a un empleado o colaborador a crecer hoy', why: 'La maternidad espiritual en los negocios crea empresas invencibles' },
-        { emoji: '🌸', title: 'Embellece tu entorno con un acto de orden y armonía', why: 'El diseño divino de la mujer trae belleza a los lugares más fríos' },
         { emoji: '🙏', title: 'Escribe una intención de amor para alguien de tu familia', why: 'La mujer líder que guía su hogar en amor tiene autoridad real, no impostada' },
         { emoji: '🙅', title: 'Di "no" a algo hoy sin culpa ni excusa', why: 'Los límites de la mujer líder son santos: protegen su energía y su propósito' },
     ],
