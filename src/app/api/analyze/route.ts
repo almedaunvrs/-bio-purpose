@@ -44,12 +44,18 @@ PASO 1 — MATRIZ DE COHERENCIA BIOLÓGICA (Regla de Oro)
 
 Detecta el arquetipo del sueño y calcula la Brecha (Gap):
 
-ARQUETIPOS DE FUERZA/MASA (atleta, fisicoculturista, guerrero, corredor, deportista):
-- Meta: alcanzar FFMI (Free Fat Mass Index) ≥ 21 para hombres, ≥ 18 para mujeres
-- FFMI = masa_magra_kg / (altura_m²)
-- IMC atlético objetivo: 24-26 para hombres, 22-24 para mujeres
-- Si está bajo peso → calcular peso meta REAL que permita el sueño
-- NUNCA sugerir que un fisicoculturista mantenga 58kg si mide 1.68m — mínimo 68-72kg
+ARQUETIPOS DE FUERZA/MASA (atleta, fisicoculturista, guerrero, corredor, deportista, culturista):
+- Meta OBLIGATORIA: calcular el peso para que el FFMI ≥ 21 (hombres) o ≥ 18 (mujeres)
+- FFMI = masa_libre_de_grasa_kg / (altura_m²)
+- Masa libre de grasa = goalWeightKg × (1 - targetBodyFatPercent/100)
+- Por tanto: goalWeightKg = FFMI_objetivo × altura_m² / (1 - targetBodyFatPercent/100)
+- TABLA DE MÍNIMOS GARANTIZADOS para hombres (atleta natural avanzado, FFMI 21, 12% grasa):
+  * 1.60m → mínimo 60kg  * 1.65m → mínimo 64kg  * 1.68m → mínimo 67kg
+  * 1.70m → mínimo 69kg  * 1.75m → mínimo 73kg  * 1.80m → mínimo 77kg
+- ES UN ERROR CRÍTICO DEVOLVER goalWeightKg == weightKg_actual para arquetipo de fuerza.
+  Si el usuario pesa 58kg y quiere ser fisicoculturista mide 1.68m, goalWeightKg DEBE ser ≥67kg.
+- El peso meta NUNCA puede ser menor o igual al peso actual en arquetipos de fuerza/masa.
+  Si el peso actual ya supera el mínimo de la tabla → calcular peso para FFMI 23.
 
 ARQUETIPOS DE RENDIMIENTO COGNITIVO (empresario, líder, creativo, científico):
 - Meta: eliminar grasa visceral (%) + maximizar músculo funcional para neuro-protección
@@ -216,8 +222,8 @@ SUEÑO DEL ALMA: "${mainGoal}"
 
 DATA BIOLÓGICOS ACTUALES:
 - Sexo: ${biologicalSex} | Edad: ${age} años
-- Estatura: ${heightCm}cm | Peso actual: ${weightKg}kg
-- IMC actual: ${bmi.toFixed(1)} | FFMI estimado: ${ffmi.toFixed(1)}
+- Estatura: ${heightCm}cm (${heightM.toFixed(2)}m) | Peso actual: ${weightKg}kg
+- IMC actual: ${bmi.toFixed(1)} | FFMI estimado actual: ${ffmi.toFixed(1)}
 - Tipo de cuerpo: ${bodyType}
 - Actividad: ${activityLevel} | Sueño: ${sleepQuality}
 - Estrés: ${stressLevel}/10
@@ -226,15 +232,25 @@ DATA BIOLÓGICOS ACTUALES:
 
 ${restrictionsBlock}
 
+CÁLCULO OBLIGATORIO ANTES DE RESPONDER:
+1. Clasifica el sueño en arquetipo de FUERZA o LONGEVIDAD.
+2. Si es FUERZA: goalWeightKg = (FFMI_objetivo × altura_m²) / (1 - targetBF)
+   - FFMI_objetivo: hombre=21, mujer=18 (atleta natural avanzado)
+   - targetBF: hombre=0.12 (12%), mujer=0.17 (17%)
+   - Para ${heightM.toFixed(2)}m y ${biologicalSex}: goalWeightKg mínimo = ${Math.round(21 * (Number(heightCm) / 100) * (Number(heightCm) / 100) / (1 - (biologicalSex === 'femenino' ? 0.17 : 0.12)))}kg
+   - Si el cálculo da ≤ peso actual (${weightKg}kg), sube FFMI_objetivo a 23.
+   - goalWeightKg NUNCA puede ser igual al peso actual en un arquetipo de fuerza.
+3. Muestra el cálculo en biologicalContext explicando el FFMI y por qué ese peso.
+
 INSTRUCCIONES ESPECIALES:
 1. Aplica PRIMERO las reglas de interferencias bio-individuales antes de cualquier cálculo.
-2. Evalúa si el IMC/FFMI actual es compatible con el sueño. Si no, calcula el peso meta real.
+2. Confirma el cálculo numérico de goalWeightKg usando FFMI antes de escribir el JSON.
 3. Detecta si el sueño es híbrido (múltiples arquetipos) y fusiona las necesidades.
 4. Calcula porciones EXACTAS en gramos con traducciones visuales.
 5. Genera el gapMessage con dopamina (peso actual → meta + timeline).
 6. Si hubo sustituciones por restricciones, explica en safetyNote de manera positiva y empoderada.
 
-Responde ÚINICAMENTE con el JSON.
+Responde ÚNICAMENTE con el JSON.
 `;
 
         const model = genAI.getGenerativeModel({
@@ -253,6 +269,27 @@ Responde ÚINICAMENTE con el JSON.
         const jsonMatch = text.match(/```json\n?([\s\S]*?)\n?```/) || text.match(/(\{[\s\S]*\})/);
         const jsonStr = jsonMatch ? jsonMatch[1] : text;
         const parsed = JSON.parse(jsonStr.trim());
+
+        // ── LOCAL FFMI SANITY OVERRIDE ──────────────────────────────────────────
+        // If AI returned goalWeightKg == currentWeight for a strength archetype, fix it.
+        const STRENGTH_KEYWORDS = ['atleta', 'fisicoculturista', 'culturista', 'culturismo', 'guerrero', 'deportista', 'musculo', 'músculo', 'hipertrofia', 'bodybuilder', 'fuerza', 'atleta'];
+        const dreamLower = mainGoal.toLowerCase();
+        const isStrengthDream = STRENGTH_KEYWORDS.some(kw => dreamLower.includes(kw)) || parsed.mission === 'atleta';
+        const currentWeight = Number(weightKg);
+        const overrideHeightM = Number(heightCm) / 100;
+        const returnedGoal = Number(parsed.goalWeightKg) || currentWeight;
+
+        if (isStrengthDream && Math.abs(returnedGoal - currentWeight) <= 2) {
+            const targetBF = biologicalSex === 'femenino' ? 0.17 : 0.12;
+            const ffmiTarget = biologicalSex === 'femenino' ? 18 : 21;
+            const correctedGoal = Math.round((ffmiTarget * overrideHeightM * overrideHeightM) / (1 - targetBF));
+            parsed.goalWeightKg = Math.max(correctedGoal, currentWeight + 5);
+            parsed.gapPhase = 'CONSTRUCCIÓN ACTIVA';
+            parsed.gapMessage = `Peso actual: ${currentWeight}kg → Meta de Poder: ${parsed.goalWeightKg}kg. Faltan ${parsed.goalWeightKg - currentWeight}kg de tejido contráctil por construir. Tu sueño lo exige. Tu biología lo permite.`;
+            console.log(`[TEMPLO] AI returned ${returnedGoal}kg for strength archetype. OVERRIDE to ${parsed.goalWeightKg}kg (FFMI ${ffmiTarget}).`);
+        }
+
+        // ───────────────────────────────────────────────────────────────────────
 
         return NextResponse.json(parsed);
     } catch (error) {

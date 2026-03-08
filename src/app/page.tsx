@@ -3,15 +3,18 @@
 import { useUserStore } from '@/store/useUserStore';
 import { Onboarding } from '@/components/Onboarding';
 import { Dashboard } from '@/components/Dashboard';
+import { AnalisisOriginal } from '@/components/AnalisisOriginal';
 
 export default function Home() {
   const profile = useUserStore((state) => state.profile);
+  const analysisAcknowledged = useUserStore((state) => state.analysisAcknowledged);
 
-  // If no profile is found, the user hasn't onboarded yet
-  if (!profile) {
-    return <Onboarding />;
-  }
+  // Step 1: No profile → Onboarding
+  if (!profile) return <Onboarding />;
 
-  // Otherwise, show the main dashboard
+  // Step 2: Profile exists but user hasn't seen the analysis yet → Intermediate Screen
+  if (!analysisAcknowledged) return <AnalisisOriginal />;
+
+  // Step 3: Profile + acknowledged → Dashboard
   return <Dashboard />;
 }
