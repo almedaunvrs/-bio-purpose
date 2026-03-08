@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import * as dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const TEMPLO_SYSTEM_PROMPT = `
 Eres TEMPLO OS — El Arquitecto de Soberanía Biológica.
@@ -19,7 +20,7 @@ Tu función NO es mantener al usuario en su peso actual. Tu función es proyecta
 
 2. LEY DE MASA CRÍTICA:
 Si el usuario pesa menos que su Meta de Poder, el plan DEBE ser de "CONSTRUCCIÓN ACTIVA" (+600 a +800 kcal).
-Calcula todos los macros y porciones basados en el PESO META (68kg), no en el actual (58kg).
+Calcula todos los macros y porciones basados en el PESO META, no en el actual.
 
 3. PUREZA SISTÉMICA (BIO-SEGURIDAD):
 - CERO LACTOSA: El usuario es intolerante. Prohibido lácteos.
@@ -43,10 +44,10 @@ ESQUEMA JSON — RESPONDE SOLO CON ESTO
     "divineReason": "Por qué Dios requiere este peso para su misión de DJ/Empresario."
   },
   "goalWeightKg": 68,
-  "calories": número,
-  "proteinGrams": número, // 2.5g por kg de peso meta
-  "carbsGrams": número,
-  "fatsGrams": número,
+  "calories": 3000,
+  "proteinGrams": 170, // 2.5g por kg de peso meta
+  "carbsGrams": 300,
+  "fatsGrams": 80,
   "gapPhase": "CONSTRUCCIÓN ACTIVA" | "DEFINICIÓN BIOLÓGICA",
   "gapMessage": "Mensaje dopaminérgico con línea de tiempo.",
   "portionPlan": {
@@ -78,78 +79,54 @@ ESQUEMA JSON — RESPONDE SOLO CON ESTO
 }
 `;
 
-export async function POST(req: NextRequest) {
-    try {
-        const body = await req.json();
-        const { mainGoal, biologicalSex, age, heightCm, weightKg } = body;
+async function main() {
+  const mainGoal = "DJ Internacional y Empresario";
+  const biologicalSex = "masculino";
+  const age = 26;
+  const heightCm = 168;
+  const weightKg = 58;
 
-        // 1. Calculamos la Meta de Poder ANTES de enviarla a la IA para que no tenga opción de dudar.
-        const powerWeightGoal = Number(heightCm) - 100; // Regla de Oro: 168cm -> 68kg
-
-        const userPrompt = `
+  const powerWeightGoal = Number(heightCm) - 100;
+  const userPrompt = `
 DATOS BIOLÓGICOS ACTUALES:
 - Sexo: ${biologicalSex}
 - Edad: ${age}
 - Altura: ${heightCm} cm
 - Peso Actual: ${weightKg} kg (ESTADO DE FRAGILIDAD)
 
-SUEÑO DEL ALMA (EL OBJETIVO): ${mainGoal}
+SUEÑO DEL ALMA (EL OBJETIVO): "${mainGoal}"
 
 MANDATOS CRÍTICOS DE ARQUITECTURA:
 1. PESO META OBLIGATORIO: Tu análisis DEBE basarse en alcanzar los ${powerWeightGoal} kg. Ignora cualquier cálculo de salud estándar que sugiera que ${weightKg} kg es suficiente. Para un ${mainGoal}, el cuerpo actual es un motor pequeño.
 2. CÁLCULO DE MACROS: Calcula la proteína basándote en el peso meta de ${powerWeightGoal} kg (2.5g por kg).
 3. FASE: Debe ser "CONSTRUCCIÓN ACTIVA". No sugieras mantenimiento.
 4. DIETA: El usuario es INTOLERANTE A LA LACTOSA. Prohibido lácteos. Usa porciones reales (ej: 5 huevos, 300g de carne, 2 tazas de arroz).
-5. RESPONDE ÚNICAMENTE EN EL FORMATO JSON SOLICITADO. PROHIBIDO usar comillas dobles (") dentro de los textos y valores del JSON (usa comillas simples ' ' si necesitas citar algo).
+5. RESPONDE ÚNICAMENTE EN EL FORMATO JSON SOLICITADO.
 `;
 
-        const model = genAI.getGenerativeModel({
-            model: 'gemini-1.5-flash',
-            systemInstruction: TEMPLO_SYSTEM_PROMPT,
-            generationConfig: {
-                temperature: 0.75, // Temperatura estable para evitar alucinaciones en el JSON
-                topP: 0.9,
-                maxOutputTokens: 3000,
-            },
-            safetySettings: [
-                {
-                    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-                    threshold: HarmBlockThreshold.BLOCK_NONE,
-                },
-                {
-                    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-                    threshold: HarmBlockThreshold.BLOCK_NONE,
-                },
-                {
-                    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-                    threshold: HarmBlockThreshold.BLOCK_NONE,
-                },
-                {
-                    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-                    threshold: HarmBlockThreshold.BLOCK_NONE,
-                },
-            ],
-        });
+try {
+  const model = genAI.getGenerativeModel({
+      model: 'gemini-1.5-flash',
+      systemInstruction: TEMPLO_SYSTEM_PROMPT,
+      generationConfig: {
+          temperature: 0.9,
+          topP: 0.95,
+          maxOutputTokens: 2000,
+          responseMimeType: "application/json",
+      },
+  });
 
-        const result = await model.generateContent(userPrompt);
-        const text = result.response.text();
-        console.log("----RAW TEXT FROM GEMINI----");
-        console.log(text);
-        console.log("----------------------------");
-
-        // Limpiamos el texto por si la IA añade markdown \`\`\`json
-        const cleanJson = text.replace(/```json|```/g, "").trim();
-        const parsed = JSON.parse(cleanJson);
-
-        // HARD OVERRIDE DE SEGURIDAD (Si la IA falla, el código manda)
-        if (parsed.goalWeightKg < powerWeightGoal) {
-            parsed.goalWeightKg = powerWeightGoal;
-            parsed.gapPhase = "CONSTRUCCIÓN ACTIVA";
-        }
-
-        return NextResponse.json(parsed);
-    } catch (error) {
-        console.error('Templo OS Error:', error);
-        return NextResponse.json({ error: 'Error en la Arquitectura Biológica' }, { status: 500 });
-    }
+  console.log("Calling Gemini...");
+  const result = await model.generateContent(userPrompt);
+  const text = result.response.text();
+  console.log("Raw answer:");
+  console.log(text);
+  
+  const cleanJson = text.replace(/```json|```/g, "").trim();
+  const parsed = JSON.parse(cleanJson);
+  console.log("Parsed JSON goalWeigthKg:", parsed.goalWeightKg);
+} catch (e) {
+  console.error("ERROR HAPPENED:", e.message);
 }
+}
+main();
