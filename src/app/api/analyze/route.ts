@@ -81,60 +81,55 @@ ESQUEMA JSON — RESPONDE SOLO CON ESTO
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { mainGoal, biologicalSex, age, heightCm, weightKg, location } = body;
+        const { mainGoal, biologicalSex, age, heightCm, weightKg } = body;
 
-        // FORZAMOS LA LÓGICA DE PODER EN EL PROMPT DEL USUARIO
+        // 1. Calculamos la Meta de Poder ANTES de enviarla a la IA para que no tenga opción de dudar.
+        const powerWeightGoal = Number(heightCm) - 100; // Regla de Oro: 168cm -> 68kg
+
         const userPrompt = `
-SUEÑO DEL ALMA: "${mainGoal}"
-DATOS: ${biologicalSex}, ${age} años, ${heightCm}cm, ${weightKg}kg.
-META EXPLÍCITA: El usuario DEBE llegar a la Meta de Poder (Altura - 100), ej. 68kg para 168cm, para su misión de ${mainGoal}.
+DATOS BIOLÓGICOS ACTUALES:
+- Sexo: ${biologicalSex}
+- Edad: ${age}
+- Altura: ${heightCm} cm
+- Peso Actual: ${weightKg} kg (ESTADO DE FRAGILIDAD)
 
-INSTRUCCIÓN:
-1. Realiza el ANÁLISIS DE PODER. Explica por qué para ${heightCm}cm y este sueño, el peso meta DEBE ser mayor (Masa Crítica, NUNCA sugerir el peso actual para mantener).
-2. Calcula la dieta (gramos exactos) para tu Meta de Poder sugerida. Necesito ver "4 huevos", "250g de carne", etc. NUNCA calcules calorías/macros para su peso frágil actual.
-3. El usuario es INTOLERANTE A LA LACTOSA. Prohibido lácteos.
-4. Añade las MISIONES DEL ALMA de Dios.
+SUEÑO DEL ALMA (EL OBJETIVO): "${mainGoal}"
+
+MANDATOS CRÍTICOS DE ARQUITECTURA:
+1. PESO META OBLIGATORIO: Tu análisis DEBE basarse en alcanzar los ${powerWeightGoal} kg. Ignora cualquier cálculo de salud estándar que sugiera que ${weightKg} kg es suficiente. Para un ${mainGoal}, el cuerpo actual es un motor pequeño.
+2. CÁLCULO DE MACROS: Calcula la proteína basándote en el peso meta de ${powerWeightGoal} kg (2.5g por kg).
+3. FASE: Debe ser "CONSTRUCCIÓN ACTIVA". No sugieras mantenimiento.
+4. DIETA: El usuario es INTOLERANTE A LA LACTOSA. Prohibido lácteos. Usa porciones reales (ej: 5 huevos, 300g de carne, 2 tazas de arroz).
+5. RESPONDE ÚNICAMENTE EN EL FORMATO JSON SOLICITADO.
 `;
 
         const model = genAI.getGenerativeModel({
-            model: 'gemini-1.5-flash',
+            model: 'gemini-1.5-flash', // Gemini 1.5 Flash es excelente siguiendo formatos JSON
             systemInstruction: TEMPLO_SYSTEM_PROMPT,
             generationConfig: {
-                temperature: 0.75,
-                topP: 0.9,
-                maxOutputTokens: 3000,
+                temperature: 0.9, // Aumentamos un poco para que sea más creativo/audaz con el "análisis de poder"
+                topP: 0.95,
+                maxOutputTokens: 2000,
+                responseMimeType: "application/json", // Forzamos modo JSON nativo
             },
         });
 
         const result = await model.generateContent(userPrompt);
         const text = result.response.text();
 
-        // Robust JSON extraction
-        const jsonMatch = text.match(/```json\n?([\s\S]*?)\n?```/) || text.match(/(\{[\s\S]*\})/);
-        const jsonStr = jsonMatch ? jsonMatch[1] : text;
-        const parsed = JSON.parse(jsonStr.trim());
+        // Limpiamos el texto por si la IA añade markdown \`\`\`json
+        const cleanJson = text.replace(/```json|```/g, "").trim();
+        const parsed = JSON.parse(cleanJson);
 
-        // ── LOCAL HARD OVERRIDE FALLBACK (BACKUP DE HIERRO) ──────────────────
-        // Si por alguna razón absurda la IA decide no obedecer el prompt 
-        // y devuelve el mismo peso, lo forzamos por código antes de devolver el JSON.
-        const dreamLower = mainGoal?.toLowerCase() || '';
-        const isGrande = dreamLower.includes('dj') || dreamLower.includes('empresario') || dreamLower.includes('atleta') || dreamLower.includes('fisicoculturista');
-
-        if (isGrande && Number(weightKg) < 62 && Number(heightCm) >= 165 && Number(heightCm) <= 170) {
-            if (parsed.goalWeightKg < 68) {
-                console.log(`[TEMPLO OVERRIDE] AI propuso ${parsed.goalWeightKg}kg. Forzando 68kg por LEY DE MASA CRITICA.`);
-                parsed.goalWeightKg = 68;
-                parsed.gapPhase = "CONSTRUCCIÓN ACTIVA";
-                if (parsed.powerAnalysis) {
-                    parsed.powerAnalysis.theGap = `Faltan ${68 - Number(weightKg)} kg de armadura funcional para resistir el llamado.`;
-                }
-            }
+        // HARD OVERRIDE DE SEGURIDAD (Si la IA falla, el código manda)
+        if (parsed.goalWeightKg < powerWeightGoal) {
+            parsed.goalWeightKg = powerWeightGoal;
+            parsed.gapPhase = "CONSTRUCCIÓN ACTIVA";
         }
-        // ───────────────────────────────────────────────────────────────────────
 
         return NextResponse.json(parsed);
     } catch (error) {
-        console.error('Gemini error:', error);
-        return NextResponse.json({ error: 'Error interno en la Arquitectura Biológica' }, { status: 500 });
+        console.error('Templo OS Error:', error);
+        return NextResponse.json({ error: 'Error en la Arquitectura Biológica' }, { status: 500 });
     }
 }
